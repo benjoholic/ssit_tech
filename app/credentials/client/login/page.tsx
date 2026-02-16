@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function DealerLoginPage() {
+export default function ClientLoginPage() {
   const router = useRouter();
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,13 +58,13 @@ export default function DealerLoginPage() {
         <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-              Dealer
+              Client
             </span>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               Sign in
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Enter your credentials to access the dealer dashboard
+              Enter your credentials to access the client dashboard
             </p>
           </div>
 
@@ -121,7 +121,7 @@ export default function DealerLoginPage() {
               </div>
               <p className="text-right">
                 <Link
-                  href="/credentials/dealer/forgot-password"
+                  href="/credentials/client/forgot-password"
                   className="text-sm text-muted-foreground underline underline-offset-2 transition-colors hover:text-foreground"
                 >
                   Forgot password?
@@ -148,7 +148,7 @@ export default function DealerLoginPage() {
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Don’t have an account?{" "}
             <Link
-              href="/credentials/dealer/signup"
+              href="/credentials/client/signup"
               className="font-medium underline underline-offset-2 transition-colors hover:text-foreground"
             >
               Sign up

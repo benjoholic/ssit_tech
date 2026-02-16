@@ -1,37 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
-
-function PaperPlaneLogo({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M2 12l4-9 14 6-8 2-6 8-4-7z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+import { Home, Box, Users, Mail, LogIn, CircleUserRound } from "lucide-react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/landing-page/products", label: "Products" },
-  { href: "/landing-page/about", label: "About Us" },
-  { href: "/landing-page/contact", label: "Contact Us" },
+  { href: "/", label: "Home", icon: Home },
+  { href: "/landing-page/products", label: "Products", icon: Box },
+  { href: "/landing-page/about", label: "About Us", icon: Users },
+  { href: "/landing-page/contact", label: "Contact Us", icon: Mail },
 ] as const;
 
 function isActivePath(pathname: string, href: string) {
@@ -39,91 +17,82 @@ function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-const signInOptions = [
-  { href: "/credentials/admin/login", label: "Admin" },
-  { href: "/credentials/dealer/login", label: "Dealer" },
-] as const;
-
 export function Header() {
   const pathname = usePathname();
-  const [signInOpen, setSignInOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setSignInOpen(false);
-      }
-    }
-    if (signInOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [signInOpen]);
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between border-b border-zinc-200/80 bg-gray-400 px-6 py-4 shadow-sm">
-      <Link href="/" className="flex items-center gap-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white">
-          <PaperPlaneLogo className="h-5 w-5" />
-        </span>
-        <span className="text-lg font-bold uppercase tracking-tight text-white">
-          SSIT TECH
-        </span>
-      </Link>
-      <nav className="flex items-center gap-8">
-        {navLinks.map(({ href, label }) => {
-          const active = isActivePath(pathname, href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`text-sm font-medium transition-colors hover:text-white/90 ${
-                active
-                  ? "text-white underline decoration-2 underline-offset-4"
-                  : "text-white/90"
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setSignInOpen((open) => !open)}
-            className="flex items-center gap-1.5 rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-gray-400"
-            aria-expanded={signInOpen}
-            aria-haspopup="true"
-          >
-            Sign In
-            <ChevronDown
-              className={`h-4 w-4 transition-transform ${signInOpen ? "rotate-180" : ""}`}
+    <>
+      <header className="sticky top-0 z-50 overflow-visible border-b border-zinc-200/80 bg-white shadow-sm">
+        <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="relative z-10 flex shrink-0 items-center">
+            <Image
+              src="/favicon.ico"
+              alt="SSIT Tech Logo"
+              width={140}
+              height={140}
+              className="absolute -top-[30px] left-0 rounded-lg drop-shadow-md"
             />
-          </button>
-          {signInOpen && (
-            <div
-              className="absolute right-0 top-full z-50 mt-1.5 min-w-[140px] rounded-lg border border-zinc-200 bg-white py-1 shadow-lg"
-              role="menu"
-            >
-              {signInOptions.map(({ href, label }) => (
+            <div className="w-[140px]" />
+          </Link>
+
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-1 lg:flex">
+            {navLinks.map(({ href, label }) => {
+              const active = isActivePath(pathname, href);
+              return (
                 <Link
                   key={href}
                   href={href}
-                  role="menuitem"
-                  className="block px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
-                  onClick={() => setSignInOpen(false)}
+                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "bg-zinc-900 text-white shadow-sm"
+                      : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                  }`}
                 >
                   {label}
                 </Link>
-              ))}
-            </div>
-          )}
+              );
+            })}
+            <Link
+              href="/credentials/client/login"
+              className="inline-flex items-center rounded-full border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-700 transition-all hover:border-zinc-400 hover:bg-zinc-50 hover:shadow-sm"
+            >
+              Sign In
+            </Link>
+          </nav>
+
+          {/* Desktop sign in (mobile hidden) */}
+          <Link
+            href="/credentials/client/login"
+            className="text-zinc-600 transition-colors hover:text-zinc-900 lg:hidden"
+          >
+            <CircleUserRound className="h-7 w-7" />
+          </Link>
+        </div>
+      </header>
+
+      {/* Mobile bottom navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200/80 bg-white/95 pb-safe backdrop-blur-lg lg:hidden">
+        <div className="flex items-center justify-around px-2 py-2">
+          {navLinks.map(({ href, label, icon: Icon }) => {
+            const active = isActivePath(pathname, href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-3 py-2 transition-all duration-200 ${
+                  active
+                    ? "bg-zinc-900 text-white shadow-sm"
+                    : "text-zinc-600 active:bg-zinc-100"
+                }`}
+              >
+                <Icon className={`h-5 w-5 ${active ? "text-white" : "text-zinc-500"}`} />
+                <span className="text-[0.65rem] font-medium leading-none">{label}</span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
-    </header>
+    </>
   );
 }

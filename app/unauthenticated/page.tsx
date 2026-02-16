@@ -13,10 +13,10 @@ export default function UnauthenticatedPage() {
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           You need to be signed in to access this page. Please log in with your
-          dealer account to continue.
+          client account to continue.
         </p>
         <Link
-          href="/credentials/dealer/login"
+          href="/credentials/client/login"
           className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           Go to sign in

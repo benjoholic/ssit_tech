@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function DealerResetPasswordPage() {
+export default function ClientResetPasswordPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -52,7 +52,7 @@ export default function DealerResetPasswordPage() {
     }
     setSuccess(true);
     setTimeout(() => {
-      router.push("/credentials/dealer/login");
+      router.push("/credentials/client/login");
       router.refresh();
     }, 2000);
   }
@@ -73,7 +73,7 @@ export default function DealerResetPasswordPage() {
       <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
         <div className="relative w-full max-w-[400px]">
           <Link
-            href="/credentials/dealer/login"
+            href="/credentials/client/login"
             className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -81,7 +81,7 @@ export default function DealerResetPasswordPage() {
           </Link>
           <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-              Dealer
+              Client
             </span>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               Invalid or expired link
@@ -90,7 +90,7 @@ export default function DealerResetPasswordPage() {
               Use the link from your password reset email, or request a new one.
             </p>
             <Link
-              href="/credentials/dealer/forgot-password"
+              href="/credentials/client/forgot-password"
               className="mt-6 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
             >
               Request new reset link
@@ -114,7 +114,7 @@ export default function DealerResetPasswordPage() {
 
       <div className="relative w-full max-w-[400px]">
         <Link
-          href="/credentials/dealer/login"
+          href="/credentials/client/login"
           className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -124,7 +124,7 @@ export default function DealerResetPasswordPage() {
         <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-              Dealer
+              Client
             </span>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               Set new password

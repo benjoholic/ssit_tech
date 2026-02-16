@@ -5,7 +5,7 @@ export default function AdminHomePage() {
         <section className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
           <p className="text-sm text-muted-foreground">
-            You are signed in as an administrator. Use this area to manage dealers and system
+            You are signed in as an administrator. Use this area to manage clients and system
             configuration.
           </p>
         </section>
@@ -17,7 +17,7 @@ export default function AdminHomePage() {
             </p>
             <p className="mt-2 text-sm text-foreground">
               This is a starting point for your admin tools. You can add cards here for pending
-              dealer applications, credential expirations, and more.
+              client applications, credential expirations, and more.
             </p>
           </div>
         </section>

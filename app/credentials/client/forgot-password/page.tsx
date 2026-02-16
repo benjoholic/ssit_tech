@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function DealerForgotPasswordPage() {
+export default function ClientForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function DealerForgotPasswordPage() {
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
       email.trim(),
       {
-        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/credentials/dealer/reset-password`,
+        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/credentials/client/reset-password`,
       }
     );
     setLoading(false);
@@ -45,7 +45,7 @@ export default function DealerForgotPasswordPage() {
       <div className="relative w-full max-w-[400px]">
         {/* Back link - top left */}
         <Link
-          href="/credentials/dealer/login"
+          href="/credentials/client/login"
           className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -55,7 +55,7 @@ export default function DealerForgotPasswordPage() {
         <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-              Dealer
+              Client
             </span>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               Forgot password

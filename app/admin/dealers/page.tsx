@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 type ListUsersResponse = Awaited<ReturnType<ReturnType<typeof createAdminClient>["auth"]["admin"]["listUsers"]>>;
 type UserItem = NonNullable<ListUsersResponse["data"]>["users"][number];
 
-async function getDealers() {
+async function getClients() {
   const supabase = createAdminClient();
   const perPage = 100;
   let page = 1;
@@ -28,23 +28,23 @@ async function getDealers() {
     .filter((u) => u.email_confirmed_at != null);
 }
 
-export default async function AdminDealersPage() {
-  const dealers = await getDealers();
+export default async function AdminClientsPage() {
+  const clients = await getClients();
   const fullName = (u: { user_metadata?: Record<string, unknown> }) =>
     (u.user_metadata?.full_name as string) || "—";
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">All dealers</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">All clients</h1>
         <p className="text-sm text-muted-foreground">
-          Registered users (verified, non-admin). {dealers.length} dealer{dealers.length !== 1 ? "s" : ""} found.
+          Registered users (verified, non-admin). {clients.length} client{clients.length !== 1 ? "s" : ""} found.
         </p>
       </div>
 
-      {dealers.length === 0 ? (
+      {clients.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border bg-muted/30 py-12 text-center text-sm text-muted-foreground">
-          No verified dealers yet. Unverified and admin users are hidden.
+          No verified clients yet. Unverified and admin users are hidden.
         </div>
       ) : (
         <div className="overflow-hidden rounded-lg border border-border bg-card">
@@ -57,7 +57,7 @@ export default async function AdminDealersPage() {
               </tr>
             </thead>
             <tbody>
-              {dealers.map((user) => (
+              {clients.map((user) => (
                 <tr key={user.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 text-foreground">{fullName(user)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{user.email ?? "—"}</td>

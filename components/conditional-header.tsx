@@ -8,9 +8,14 @@ import { AdminHeader } from "@/components/admin/header";
 const NO_HEADER_PATHS = [
   "/credentials/admin/login",
   "/credentials/admin/forgot-password",
-  "/credentials/dealer/login",
-  "/credentials/dealer/signup",
-  "/credentials/dealer/forgot-password",
+  "/credentials/client/login",
+  "/credentials/client/signup",
+  "/credentials/client/forgot-password",
+  "/credentials/client/reset-password",
+  "/credentials/retailer/login",
+  "/credentials/retailer/signup",
+  "/credentials/retailer/forgot-password",
+  "/credentials/retailer/reset-password",
   "/unauthenticated",
 ];
 

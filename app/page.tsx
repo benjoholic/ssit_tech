@@ -122,28 +122,28 @@ function IsometricHeroIllustration() {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-50 via-white to-zinc-100 font-sans text-[var(--foreground)]">
+    <main className="min-h-screen bg-gray-200 font-sans text-[var(--foreground)]">
       {/* Hero */}
       <section
         className="relative flex min-h-[calc(100vh-65px)] flex-col items-center justify-center gap-12 overflow-hidden px-6 py-16 md:flex-row md:gap-16 md:px-12 lg:px-20"
       >
         <div className="flex max-w-xl flex-1 flex-col justify-center text-zinc-900">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-            Dealer onboarding, simplified
+            Client onboarding, simplified
           </p>
           <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            A modern portal for growing dealer networks
+            A modern portal for growing client networks
           </h1>
           <p className="mb-6 max-w-md text-lg leading-relaxed text-zinc-600">
-            Centralize applications, credentials, and approvals in one place. Give your dealers a
+            Centralize applications, credentials, and approvals in one place. Give your clients a
             smooth experience while your team gets complete visibility and control.
           </p>
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <Link
-              href="/credentials/dealer/login"
+              href="/credentials/client/login"
               className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-zinc-900/10 transition hover:bg-zinc-800"
             >
-              Apply as Dealer
+              Apply as Client
             </Link>
             <Link
               href="#learn-more"
@@ -171,16 +171,16 @@ export default function Home() {
       {/* Features */}
       <section
         id="learn-more"
-        className="border-t border-zinc-100 bg-white/70 px-6 py-14 backdrop-blur-sm md:px-12 lg:px-20"
+        className="border-t border-zinc-200 bg-gray-200 px-6 py-14 md:px-12 lg:px-20"
       >
         <div className="mx-auto max-w-5xl">
           <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight text-zinc-900 md:text-3xl">
-                Built for dealer operations teams
+                Built for client operations teams
               </h2>
               <p className="mt-2 max-w-2xl text-sm text-zinc-600 md:text-base">
-                Everything you need to bring new dealers onboard, keep credentials up to date, and
+                Everything you need to bring new clients onboard, keep credentials up to date, and
                 stay audit‑ready without drowning in spreadsheets and email threads.
               </p>
             </div>
@@ -192,7 +192,7 @@ export default function Home() {
                 01 · Applications
               </p>
               <h3 className="mt-3 text-base font-semibold text-zinc-900">
-                Guided dealer applications
+                Guided client applications
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-600">
                 Collect the right information the first time with clear steps, progress indicators,

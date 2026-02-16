@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function DealerSignupPage() {
+export default function ClientSignupPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -75,13 +75,13 @@ export default function DealerSignupPage() {
         <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
-              Dealer
+              Client
             </span>
             <h1 className="mt-4 text-2xl font-semibold tracking-tight text-foreground">
               Create account
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Sign up to get started as a dealer
+              Sign up to get started as a client
             </p>
           </div>
 
@@ -221,7 +221,7 @@ export default function DealerSignupPage() {
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
-              href="/credentials/dealer/login"
+              href="/credentials/client/login"
               className="font-medium underline underline-offset-2 transition-colors hover:text-foreground"
             >
               Sign in

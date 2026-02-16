@@ -40,9 +40,9 @@ const adminNavSections = [
     ],
   },
   {
-    label: "Dealers",
+    label: "Clients",
     links: [
-      { href: "/admin/dealers", label: "All dealers", icon: Users },
+      { href: "/admin/dealers", label: "All clients", icon: Users },
       { href: "/admin/dealers/applications", label: "Applications", icon: FileCheck },
     ],
   },
@@ -123,10 +123,10 @@ function AdminSidebarNav() {
         </ul>
       </div>
 
-      {/* Dealers */}
+      {/* Clients */}
       <div>
         <p className="mb-1.5 px-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          Dealers
+          Clients
         </p>
         <ul className="space-y-0.5">
           {adminNavSections[1].links.map(({ href, label, icon: Icon }) => {

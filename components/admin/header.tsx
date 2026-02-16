@@ -9,7 +9,7 @@ import { useAdminSidebar } from "@/components/admin/sidebar-context";
 const MOCK_NOTIFICATIONS = [
   {
     id: "1",
-    title: "New dealer application",
+    title: "New client application",
     message: "Acme Motors has submitted an application for approval.",
     time: "2 min ago",
     unread: true,
@@ -17,7 +17,7 @@ const MOCK_NOTIFICATIONS = [
   {
     id: "2",
     title: "Credential expiring soon",
-    message: "3 dealer credentials will expire in the next 7 days.",
+    message: "3 client credentials will expire in the next 7 days.",
     time: "1 hour ago",
     unread: true,
   },
@@ -31,7 +31,7 @@ const MOCK_NOTIFICATIONS = [
   {
     id: "4",
     title: "New message",
-    message: "A dealer has requested support for account access.",
+    message: "A client has requested support for account access.",
     time: "2 days ago",
     unread: false,
   },

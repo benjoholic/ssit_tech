@@ -47,15 +47,19 @@ export function HeroCarousel() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-md">
-        <div className="aspect-[4/3] w-full animate-pulse rounded-xl bg-zinc-100" />
+      <div className="w-full max-w-3xl">
+        <div className="flex gap-2 md:gap-4">
+          <div className="aspect-4/3 w-full animate-pulse rounded-xl bg-zinc-100" />
+          <div className="hidden aspect-4/3 w-full animate-pulse rounded-xl bg-zinc-100 md:block" />
+          <div className="hidden aspect-4/3 w-full animate-pulse rounded-xl bg-zinc-100 lg:block" />
+        </div>
       </div>
     );
   }
 
   if (products.length === 0) {
     return (
-      <div className="flex aspect-[4/3] w-full max-w-md items-center justify-center rounded-xl bg-zinc-50">
+      <div className="flex aspect-4/3 w-full max-w-3xl items-center justify-center rounded-xl bg-zinc-50">
         <Package className="h-12 w-12 text-zinc-200" />
       </div>
     );
@@ -64,34 +68,41 @@ export function HeroCarousel() {
   return (
     <Carousel
       setApi={setApi}
-      opts={{ loop: true }}
+      opts={{
+        loop: true,
+        align: "start",
+      }}
       plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
-      className="w-full max-w-md"
+      className="w-full max-w-3xl rounded-2xl border border-zinc-200 bg-white shadow-sm"
     >
-      <CarouselContent>
+      <CarouselContent className="-ml-2 md:-ml-4">
         {products.map((product) => (
-          <CarouselItem key={product.id}>
-            <div className="overflow-hidden rounded-xl border border-zinc-100 bg-white">
-              {/* Image */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-zinc-50">
-                {imageUrl(product) ? (
-                  <Image
-                    src={imageUrl(product)!}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 448px"
-                    priority
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <Package className="h-12 w-12 text-zinc-200" />
-                  </div>
-                )}
+          <CarouselItem
+            key={product.id}
+            className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3"
+          >
+            <div className="flex flex-col">
+              {/* Image Card */}
+              <div className="overflow-hidden rounded-t-xl bg-white shadow-sm">
+                <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-50">
+                  {imageUrl(product) ? (
+                    <Image
+                      src={imageUrl(product)!}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-300 hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <Package className="h-12 w-12 text-zinc-200" />
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Caption */}
-              <div className="px-4 py-3">
+              {/* Text Card */}
+              <div className="overflow-hidden rounded-b-xl border border-zinc-100 bg-white px-4 py-3 shadow-sm transition-all hover:shadow-md">
                 <p className="text-xs font-medium text-zinc-400">
                   {CATEGORY_LABELS[product.category]}
                 </p>
@@ -104,12 +115,12 @@ export function HeroCarousel() {
         ))}
       </CarouselContent>
 
-      <CarouselPrevious className="-left-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
-      <CarouselNext className="-right-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
+      <CarouselPrevious className="-left-4 size-8 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
+      <CarouselNext className="-right-4 size-8 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
 
       {/* Dots */}
       {count > 1 && (
-        <div className="mt-3 flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1.5 pb-4">
           {Array.from({ length: count }).map((_, i) => (
             <button
               key={i}
@@ -118,7 +129,7 @@ export function HeroCarousel() {
               onClick={() => api?.scrollTo(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === current
-                  ? "w-5 bg-zinc-900"
+                  ? "w-6 bg-zinc-900"
                   : "w-1.5 bg-zinc-200 hover:bg-zinc-300"
               }`}
             />

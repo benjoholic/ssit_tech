@@ -43,7 +43,9 @@ export default function ClientSignupPage() {
     }
     setSuccess(true);
     // If email confirmation is disabled in Supabase, session exists; redirect
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (session) {
       router.push("/");
       router.refresh();
@@ -54,15 +56,15 @@ export default function ClientSignupPage() {
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
       {/* Subtle background */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264_/_.4),transparent)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264/.4),transparent)]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264_/_.5)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264/.5)_100%)]"
         aria-hidden
       />
 
-      <div className="relative w-full max-w-[400px]">
+      <div className="relative w-full max-w-100">
         {/* Back link - top left */}
         <Link
           href="/"
@@ -72,7 +74,7 @@ export default function ClientSignupPage() {
           Back to home
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
+        <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/3 backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
               Client
@@ -93,7 +95,8 @@ export default function ClientSignupPage() {
             )}
             {success && (
               <p className="rounded-lg border border-green-500/50 bg-green-500/10 px-3.5 py-3 text-sm text-green-700 dark:text-green-400">
-                Account created. Check your email to confirm your account, then sign in.
+                Account created. Check your email to confirm your account, then
+                sign in.
               </p>
             )}
             <div className="space-y-2">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ConditionalHeader } from "@/components/conditional-header";
 import { ClientSidebarProvider } from "@/components/client/sidebar-context";
@@ -7,14 +7,17 @@ import { AdminSidebarProvider } from "@/components/admin/sidebar-context";
 import "./globals.css";
 import "./tw-animate.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${poppins.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <ClientSidebarProvider>
           <AdminSidebarProvider>

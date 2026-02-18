@@ -30,9 +30,9 @@ export function Header() {
               alt="SSIT Tech Logo"
               width={140}
               height={140}
-              className="absolute -top-[30px] left-0 rounded-lg drop-shadow-md"
+              className="absolute -top-7.5 left-0 rounded-lg drop-shadow-md"
             />
-            <div className="w-[140px]" />
+            <div className="w-35" />
           </Link>
 
           {/* Desktop nav */}
@@ -87,8 +87,12 @@ export function Header() {
                     : "text-zinc-600 active:bg-zinc-100"
                 }`}
               >
-                <Icon className={`h-5 w-5 ${active ? "text-white" : "text-zinc-500"}`} />
-                <span className="text-[0.65rem] font-medium leading-none">{label}</span>
+                <Icon
+                  className={`h-5 w-5 ${active ? "text-white" : "text-zinc-500"}`}
+                />
+                <span className="text-[0.65rem] font-medium leading-none">
+                  {label}
+                </span>
               </Link>
             );
           })}

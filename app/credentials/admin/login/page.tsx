@@ -71,15 +71,18 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: usernameOrEmail.trim(),
-      password,
-    });
+    const { data, error: signInError } = await supabase.auth.signInWithPassword(
+      {
+        email: usernameOrEmail.trim(),
+        password,
+      },
+    );
 
     if (signInError || !data.user) {
       setLoading(false);
       toast.error("Invalid credentials", {
-        description: signInError?.message ?? "Please check your email and password.",
+        description:
+          signInError?.message ?? "Please check your email and password.",
       });
       return;
     }
@@ -133,15 +136,15 @@ export default function AdminLoginPage() {
 
       {/* Subtle background */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264_/_.4),transparent)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264/.4),transparent)]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264_/_.5)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264/.5)_100%)]"
         aria-hidden
       />
 
-      <div className="relative w-full max-w-[400px]">
+      <div className="relative w-full max-w-100">
         {/* Back link - top left */}
         {!isRedirecting && (
           <Link
@@ -154,7 +157,7 @@ export default function AdminLoginPage() {
         )}
 
         {!isRedirecting && (
-          <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
+          <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/3 backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
               Admin

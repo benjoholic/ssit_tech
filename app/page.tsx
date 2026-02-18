@@ -6,15 +6,15 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 font-sans text-zinc-900">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 pb-20 pt-16 md:flex-row md:gap-14 md:px-10 md:pt-24 lg:gap-20">
+        <div className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:px-10 md:pt-24">
           {/* Copy */}
-          <div className="flex max-w-lg flex-1 flex-col">
+          <div className="mx-auto mb-10 flex max-w-2xl flex-col items-center text-center md:mb-14">
             <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-zinc-900 md:text-4xl lg:text-5xl">
               A modern portal for&nbsp;growing client networks
             </h1>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-zinc-500">
-              Centralize applications, credentials, and approvals in one
-              place — smooth for clients, full visibility for your team.
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-500">
+              Centralize applications, credentials, and approvals in one place —
+              smooth for clients, full visibility for your team.
             </p>
             <div className="mt-8 flex items-center gap-3">
               <Link
@@ -32,8 +32,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Carousel */}
-          <div className="flex flex-1 items-center justify-center">
+          {/* Gallery Slider */}
+          <div className="flex items-center justify-center">
             <HeroCarousel />
           </div>
         </div>

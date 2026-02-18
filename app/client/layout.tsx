@@ -22,12 +22,16 @@ export default async function ClientLayout({
     redirect("/unauthenticated");
   }
 
+  const isAdmin = !!session?.user?.user_metadata?.is_admin;
+
+  if (isAdmin) {
+    redirect("/unauthenticated");
+  }
+
   return (
     <div className="fixed inset-0 top-14 z-0 flex overflow-hidden">
       <ClientSidebar />
-      <div className="min-h-0 min-w-0 flex-1 overflow-auto">
-        {children}
-      </div>
+      <div className="min-h-0 min-w-0 flex-1 overflow-auto">{children}</div>
     </div>
   );
 }

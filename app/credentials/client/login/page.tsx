@@ -17,19 +17,37 @@ export default function ClientLoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+
     const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: usernameOrEmail.trim(),
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
+    const { data, error: signInError } = await supabase.auth.signInWithPassword(
+      {
+        email: usernameOrEmail.trim(),
+        password,
+      },
+    );
+
+    if (signInError || !data.user) {
+      setLoading(false);
       toast.error("Invalid credentials", {
-        description: "Email or password is incorrect. Please try again.",
+        description:
+          signInError?.message ?? "Please check your email and password.",
       });
       return;
     }
-    router.push("/");
+
+    const isAdmin = !!data.user.user_metadata?.is_admin;
+
+    if (isAdmin) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      toast.error("Invalid credentials", {
+        description: "Please check your email and password.",
+      });
+      return;
+    }
+
+    setLoading(false);
+    router.push("/client/home");
     router.refresh();
   }
 
@@ -37,15 +55,15 @@ export default function ClientLoginPage() {
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
       {/* Subtle background */}
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264_/_.4),transparent)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264/.4),transparent)]"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264_/_.5)_100%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,oklch(0.98_0.005_264/.5)_100%)]"
         aria-hidden
       />
 
-      <div className="relative w-full max-w-[400px]">
+      <div className="relative w-full max-w-100">
         {/* Back link - top left */}
         <Link
           href="/"
@@ -55,7 +73,7 @@ export default function ClientLoginPage() {
           Back to home
         </Link>
 
-        <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
+        <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/3 backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
               Client

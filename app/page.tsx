@@ -3,7 +3,7 @@ import { HeroCarousel } from "@/components/hero-carousel";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white font-sans text-zinc-900">
+    <main className="min-h-screen bg-gray-100 font-sans text-zinc-900">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 pb-20 pt-16 md:flex-row md:gap-14 md:px-10 md:pt-24 lg:gap-20">

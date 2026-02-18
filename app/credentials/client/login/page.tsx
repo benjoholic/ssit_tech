@@ -25,11 +25,11 @@ export default function ClientLoginPage() {
     setLoading(false);
     if (signInError) {
       toast.error("Invalid credentials", {
-        description: signInError.message,
+        description: "Email or password is incorrect. Please try again.",
       });
       return;
     }
-    router.push("/client/home");
+    router.push("/");
     router.refresh();
   }
 

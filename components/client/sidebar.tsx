@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
@@ -13,9 +13,13 @@ import {
   ChevronRight,
   ChevronDown,
   Activity,
+  LogOut,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { useClientSidebar } from "@/components/client/sidebar-context";
 import {
   Collapsible,
@@ -46,8 +50,10 @@ function isActivePath(pathname: string, href: string) {
 
 function SidebarNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const ctx = useClientSidebar();
   const closeOnNavigate = () => ctx?.setOpen(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   
   // Auto-expand settings if current path is within settings
   const isSettingsPath = pathname.startsWith("/client/settings");
@@ -61,105 +67,145 @@ function SidebarNav() {
 
   const isSettingsActive = isSettingsPath;
 
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast.error("Sign out failed", { description: error.message });
+        setIsSigningOut(false);
+        return;
+      }
+      
+      toast.success("Signed out successfully");
+      router.push("/credentials/client/login");
+    } catch (error) {
+      toast.error("Sign out failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <nav className="flex flex-1 flex-col gap-1 p-3">
-      <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Main
-      </p>
-      {clientSidebarLinks.map(({ href, label, icon: Icon }) => {
-        const active = isActivePath(pathname, href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={closeOnNavigate}
+      <div className="flex-1 space-y-1">
+        <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Main
+        </p>
+        {clientSidebarLinks.map(({ href, label, icon: Icon }) => {
+          const active = isActivePath(pathname, href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={closeOnNavigate}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <Icon className="h-5 w-5 shrink-0" aria-hidden />
+              <span className="flex-1">{label}</span>
+              <ChevronRight
+                className={cn("h-4 w-4 shrink-0", !active && "opacity-50")}
+                aria-hidden
+              />
+            </Link>
+          );
+        })}
+
+        <p className="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Account
+        </p>
+        {clientSidebarFooterLinks.map(({ href, label, icon: Icon }) => {
+          const active = isActivePath(pathname, href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              onClick={closeOnNavigate}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <Icon className="h-5 w-5 shrink-0" aria-hidden />
+              <span className="flex-1">{label}</span>
+              <ChevronRight
+                className={cn("h-4 w-4 shrink-0", !active && "opacity-50")}
+                aria-hidden
+              />
+            </Link>
+          );
+        })}
+
+        {/* Expandable Settings */}
+        <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+          <CollapsibleTrigger
+            suppressHydrationWarning
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              active
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              isSettingsActive
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             )}
           >
-            <Icon className="h-5 w-5 shrink-0" aria-hidden />
-            <span className="flex-1">{label}</span>
-            <ChevronRight
-              className={cn("h-4 w-4 shrink-0", !active && "opacity-50")}
+            <Settings className="h-5 w-5 shrink-0" aria-hidden />
+            <span className="flex-1 text-left">Settings</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 transition-transform duration-200",
+                isSettingsOpen && "rotate-180",
+                !isSettingsActive && "opacity-50"
+              )}
               aria-hidden
             />
-          </Link>
-        );
-      })}
-
-      <p className="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Account
-      </p>
-      {clientSidebarFooterLinks.map(({ href, label, icon: Icon }) => {
-        const active = isActivePath(pathname, href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={closeOnNavigate}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            )}
-          >
-            <Icon className="h-5 w-5 shrink-0" aria-hidden />
-            <span className="flex-1">{label}</span>
-            <ChevronRight
-              className={cn("h-4 w-4 shrink-0", !active && "opacity-50")}
-              aria-hidden
-            />
-          </Link>
-        );
-      })}
-
-      {/* Expandable Settings */}
-      <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <CollapsibleTrigger
-          className={cn(
-            "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-            isSettingsActive
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-          )}
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-1 space-y-1">
+            {settingsSubLinks.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={closeOnNavigate}
+                  className={cn(
+                    "ml-8 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
+      
+      {/* Sign Out Button */}
+      <div className="border-t border-border pt-3">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
         >
-          <Settings className="h-5 w-5 shrink-0" aria-hidden />
-          <span className="flex-1 text-left">Settings</span>
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 transition-transform duration-200",
-              isSettingsOpen && "rotate-180",
-              !isSettingsActive && "opacity-50"
-            )}
-            aria-hidden
-          />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-1 space-y-1">
-          {settingsSubLinks.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={closeOnNavigate}
-                className={cn(
-                  "ml-8 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                )}
-              >
-                <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span>{label}</span>
-              </Link>
-            );
-          })}
-        </CollapsibleContent>
-      </Collapsible>
+          <LogOut className="h-5 w-5 shrink-0" aria-hidden />
+          <span className="flex-1 text-left text-sm font-medium">
+            {isSigningOut ? "Signing out..." : "Sign Out"}
+          </span>
+        </Button>
+      </div>
     </nav>
   );
 }

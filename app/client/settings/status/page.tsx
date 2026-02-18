@@ -97,11 +97,10 @@ function LogoPattern() {
       {positions.map((pos, i) => (
         <div
           key={i}
-          className="absolute"
+          className="absolute watermark-item"
           style={{
             top: pos.top,
             left: pos.left,
-            transform: "translate(-50%, -50%) rotate(-28deg)",
           }}
         >
           {watermark}
@@ -137,15 +136,19 @@ function StatusBadge({ verified }: { verified: boolean }) {
 
 export default async function ClientSettingsStatusPage() {
   const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  let user = null;
 
-  if (!session) {
-    redirect("/unauthenticated");
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user ?? null;
+  } catch {
+    // Error getting user from auth server
+    user = null;
   }
 
-  const user = session.user;
+  if (!user) {
+    redirect("/unauthenticated");
+  }
   const userMetadata = user.user_metadata || {};
   const fullName = userMetadata.full_name || user.email?.split("@")[0] || "User";
   const email = user.email || "No email";

@@ -43,10 +43,15 @@ export default function ClientSignupPage() {
     }
     setSuccess(true);
     // If email confirmation is disabled in Supabase, session exists; redirect
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      router.push("/");
-      router.refresh();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/");
+        router.refresh();
+      }
+    } catch {
+      // Ignore "Refresh Token Not Found" and other session errors
+      // User's session may not be immediately available
     }
   }
 

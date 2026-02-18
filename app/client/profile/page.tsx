@@ -4,15 +4,19 @@ import ClientProfilePage from "./profile-page-client";
 
 export default async function ClientProfilePageRoute() {
   const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  let user = null;
 
-  if (!session) {
-    redirect("/unauthenticated");
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user ?? null;
+  } catch {
+    // Error getting user from auth server
+    user = null;
   }
 
-  const user = session.user;
+  if (!user) {
+    redirect("/unauthenticated");
+  }
   const meta = user.user_metadata || {};
 
   const fullName = (meta.full_name as string | undefined) || "";

@@ -47,7 +47,7 @@ export function HeroCarousel() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-xs md:max-w-sm">
         <div className="aspect-[4/3] w-full animate-pulse rounded-xl bg-zinc-100" />
       </div>
     );
@@ -55,7 +55,7 @@ export function HeroCarousel() {
 
   if (products.length === 0) {
     return (
-      <div className="flex aspect-[4/3] w-full max-w-md items-center justify-center rounded-xl bg-zinc-50">
+      <div className="flex aspect-[4/3] w-full max-w-xs md:max-w-sm items-center justify-center rounded-xl bg-zinc-50">
         <Package className="h-12 w-12 text-zinc-200" />
       </div>
     );
@@ -66,7 +66,7 @@ export function HeroCarousel() {
       setApi={setApi}
       opts={{ loop: true }}
       plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
-      className="w-full max-w-md"
+      className="w-full max-w-xs md:max-w-sm"
     >
       <CarouselContent>
         {products.map((product) => (
@@ -104,8 +104,8 @@ export function HeroCarousel() {
         ))}
       </CarouselContent>
 
-      <CarouselPrevious className="-left-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
-      <CarouselNext className="-right-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
+      <CarouselPrevious className="left-2 md:-left-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
+      <CarouselNext className="right-2 md:-right-4 size-7 border-zinc-100 bg-white shadow-sm hover:bg-zinc-50" />
 
       {/* Dots */}
       {count > 1 && (

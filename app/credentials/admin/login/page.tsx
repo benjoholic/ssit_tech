@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +13,58 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    // Check if user already has an active session
+    const checkSession = async () => {
+      const supabase = createClient();
+      try {
+        const { data } = await supabase.auth.getSession();
+        
+        if (typeof window !== "undefined") {
+          const params = new URLSearchParams(window.location.search);
+          const reason = params.get("reason");
+          
+          // If there's an active session and we're NOT redirected due to session issues
+          if (data.session && !reason) {
+            setIsRedirecting(true);
+            router.push("/admin/home");
+            return;
+          }
+        }
+      } catch {
+        // Ignore "Refresh Token Not Found" and other session errors
+        // User not logged in, stay on login page
+      }
+    };
+    
+    checkSession();
+  }, [router]);
+
+  useEffect(() => {
+    // Read reason from URL search params directly
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get("reason");
+      
+      console.log("Admin login page - reason from URL:", reason); // Debug log
+      
+      if (reason === "session_expired") {
+        toast.info("Session Expired", {
+          description: "Your session has expired. Please log in again.",
+        });
+      } else if (reason === "unauthenticated") {
+        toast.warning("Please Log In First", {
+          description: "You need to sign in to access the admin dashboard.",
+        });
+      } else if (reason === "unauthorized") {
+        toast.error("Access Denied", {
+          description: "Your account does not have admin access. Please sign in with an admin account.",
+        });
+      }
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,8 +89,8 @@ export default function AdminLoginPage() {
     if (!isAdmin) {
       await supabase.auth.signOut();
       setLoading(false);
-      toast.error("Access denied", {
-        description: "Your account does not have admin access.",
+      toast.error("Invalid credentials", {
+        description: "Please check your email and password.",
       });
       return;
     }
@@ -50,6 +102,35 @@ export default function AdminLoginPage() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-12">
+      <style>{`
+        .redirecting-loader {
+          width: fit-content;
+          font-size: 40px;
+          font-family: system-ui, sans-serif;
+          font-weight: bold;
+          text-transform: uppercase;
+          color: #0000;
+          -webkit-text-stroke: 1px #000;
+          background: conic-gradient(#000 0 0) 50%/0 100% no-repeat text;
+          animation: redirecting-loader-animation 1.5s linear infinite;
+        }
+        .redirecting-loader::before {
+          content: "Redirecting";
+        }
+        @keyframes redirecting-loader-animation {
+          to { background-size: 120% 100%; }
+        }
+      `}</style>
+
+      {/* Loading overlay when redirecting */}
+      {isRedirecting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 rounded-2xl bg-card p-8 shadow-lg">
+            <div className="redirecting-loader"></div>
+          </div>
+        </div>
+      )}
+
       {/* Subtle background */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,oklch(0.95_0.01_264_/_.4),transparent)]"
@@ -62,15 +143,18 @@ export default function AdminLoginPage() {
 
       <div className="relative w-full max-w-[400px]">
         {/* Back link - top left */}
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to home
-        </Link>
+        {!isRedirecting && (
+          <Link
+            href="/"
+            className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to home
+          </Link>
+        )}
 
-        <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
+        {!isRedirecting && (
+          <div className="rounded-2xl border border-border bg-card/80 p-8 shadow-lg shadow-black/[0.03] backdrop-blur-sm">
           <div className="mb-8">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-primary">
               Admin
@@ -160,6 +244,7 @@ export default function AdminLoginPage() {
             </button>
           </form>
         </div>
+        )}
       </div>
     </main>
   );

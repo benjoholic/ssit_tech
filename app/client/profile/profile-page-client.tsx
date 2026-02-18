@@ -356,6 +356,8 @@ export default function ClientProfilePage({
                       value={email}
                       disabled
                       readOnly
+                      placeholder="Your email address"
+                      title="Email address (managed by login provider)"
                     />
                   </Field>
 

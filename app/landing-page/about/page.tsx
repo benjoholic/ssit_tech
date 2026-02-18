@@ -6,9 +6,10 @@ export default function AboutPage() {
       {/* Page hero */}
       <section className="border-b border-zinc-200/80 bg-white px-6 py-16 md:px-12 lg:px-20">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-600">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-700 shadow-sm backdrop-blur-sm">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
             Who we are
-          </p>
+          </div>
           <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-zinc-800 md:text-5xl">
             About Us
           </h1>

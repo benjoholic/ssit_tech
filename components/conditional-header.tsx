@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/header";
-import { ClientHeader } from "@/components/client/header";
+import { ClientHeaderWrapper } from "@/components/client/header-wrapper";
 import { AdminHeader } from "@/components/admin/header";
 
 const NO_HEADER_PATHS = [
@@ -27,6 +27,6 @@ export function ConditionalHeader() {
 
   if (hideHeader) return null;
   if (pathname.startsWith("/admin")) return <AdminHeader />;
-  if (pathname.startsWith("/client")) return <ClientHeader />;
+  if (pathname.startsWith("/client")) return <ClientHeaderWrapper />;
   return <Header />;
 }

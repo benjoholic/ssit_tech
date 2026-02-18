@@ -26,9 +26,10 @@ export async function proxy(request: NextRequest) {
   );
 
   try {
-    await supabase.auth.getSession();
+    // Refresh session/user data with the auth server
+    await supabase.auth.getUser();
   } catch {
-    // Ignore session recovery errors
+    // Ignore auth errors
   }
 
   return response;

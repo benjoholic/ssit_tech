@@ -28,6 +28,9 @@ export default function ClientResetPasswordPage() {
     const supabase = createClient();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setHasRecoverySession(!!session);
+    }).catch(() => {
+      // Ignore "Refresh Token Not Found" and other session errors
+      setHasRecoverySession(false);
     });
   }, []);
 

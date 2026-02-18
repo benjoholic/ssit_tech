@@ -8,11 +8,17 @@ export default async function ClientLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  let user = null;
 
-  if (!session) {
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user ?? null;
+  } catch {
+    // Error getting user from auth server
+    user = null;
+  }
+
+  if (!user) {
     redirect("/unauthenticated");
   }
 

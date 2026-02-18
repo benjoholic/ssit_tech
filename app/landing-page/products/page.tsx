@@ -68,9 +68,10 @@ export default function ProductsPage() {
       {/* Page hero */}
       <section className="border-b border-zinc-200/80 bg-white px-6 py-16 md:px-12 lg:px-20">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-600">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-700 shadow-sm backdrop-blur-sm">
+            <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
             What we offer
-          </p>
+          </div>
           <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-zinc-800 md:text-5xl">
             Our Products
           </h1>
@@ -149,8 +150,18 @@ export default function ProductsPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search products…"
-              className="w-full rounded-full border border-zinc-200 bg-white py-2 pl-9 pr-3 text-sm placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300"
+              className="w-full rounded-full border border-zinc-200 bg-white py-2 pl-9 pr-14 text-sm placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-300"
             />
+            {searchTerm.trim().length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full px-2 py-0.5 text-[10px] font-medium text-zinc-500 hover:text-zinc-800"
+                aria-label="Clear search"
+              >
+                Clear
+              </button>
+            )}
           </div>
           </div>
         </div>

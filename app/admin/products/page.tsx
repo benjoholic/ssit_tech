@@ -7,6 +7,7 @@ import { LayoutGrid, List, Package, FilterX, Search } from "lucide-react";
 import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
 import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
 import { NoResultsAnimation } from "@/components/admin/no-results-animation";
+import { BarcodeDisplay } from "@/components/barcode-display";
 
 function parseCategories(
   searchParams: ReturnType<typeof useSearchParams>,
@@ -312,6 +313,11 @@ export default function AdminProductsPage() {
                           <span className="font-semibold text-xs sm:text-sm lg:text-xs text-foreground">₱{priceStr(product)}</span>
                           <span className="text-muted-foreground text-xs lg:text-[10px]">Stocks: {typeof product.stocks === "number" ? product.stocks : 0}</span>
                         </div>
+                        {product.barcode && (
+                          <div className="mt-1.5 sm:mt-2 lg:mt-1.5">
+                            <BarcodeDisplay value={product.barcode} height={30} barWidth={1.2} fontSize={10} className="text-foreground" />
+                          </div>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -408,6 +414,11 @@ export default function AdminProductsPage() {
                               <p className="font-medium text-sm lg:text-xs text-foreground mb-1">{product.name}</p>
                               {product.description && (
                                 <p className="text-xs lg:text-[10px] text-muted-foreground line-clamp-3">{product.description}</p>
+                              )}
+                              {product.barcode && (
+                                <div className="mt-1.5">
+                                  <BarcodeDisplay value={product.barcode} height={28} barWidth={1} fontSize={9} className="text-foreground" />
+                                </div>
                               )}
                             </div>
                           </td>

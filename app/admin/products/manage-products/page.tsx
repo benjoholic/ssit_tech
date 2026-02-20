@@ -13,6 +13,8 @@ import {
 } from "@/app/admin/products/actions";
 import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
 import { NoResultsAnimation } from "@/components/admin/no-results-animation";
+import { BarcodeScanner } from "@/components/barcode-scanner";
+import { BarcodeDisplay } from "@/components/barcode-display";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,6 +40,7 @@ type FormState = {
   price: string;
   stocks: string;
   image: string;
+  barcode: string;
 };
 
 const emptyForm: FormState = {
@@ -47,6 +50,7 @@ const emptyForm: FormState = {
   price: "",
   stocks: "0",
   image: "",
+  barcode: "",
 };
 
 const MAX_IMAGE_SIZE = 800;
@@ -157,6 +161,7 @@ export default function ManageProductsPage() {
       price: typeof product.price === "number" ? String(product.price) : "",
       stocks: typeof product.stocks === "number" ? String(product.stocks) : "0",
       image: product.image ?? "",
+      barcode: product.barcode ?? "",
     });
     setDialogOpen(true);
   };
@@ -174,6 +179,7 @@ export default function ManageProductsPage() {
 
     const description = form.description.trim();
     const image = form.image.trim();
+    const barcode = form.barcode.trim();
     const stocks = Math.max(0, Math.floor(parseInt(form.stocks.trim(), 10) || 0));
     setSaving(true);
 
@@ -186,6 +192,7 @@ export default function ManageProductsPage() {
         price,
         stocks,
         image,
+        barcode,
       };
       const { error } = await updateProductAction(updated);
       setSaving(false);
@@ -205,6 +212,7 @@ export default function ManageProductsPage() {
         price,
         stocks,
         image,
+        barcode,
       });
       setSaving(false);
       if (error) {
@@ -359,6 +367,7 @@ export default function ManageProductsPage() {
                     <th className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-1.5 text-left font-medium text-xs lg:text-xs text-foreground">Category</th>
                     <th className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-1.5 text-left font-medium text-xs lg:text-xs text-foreground">Price</th>
                     <th className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-1.5 text-left font-medium text-xs lg:text-xs text-foreground">Stocks</th>
+                    <th className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-1.5 text-left font-medium text-xs lg:text-xs text-foreground">Barcode</th>
                     <th className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-1.5 text-right font-medium text-xs lg:text-xs text-foreground">Actions</th>
                   </tr>
                 </thead>
@@ -410,6 +419,13 @@ export default function ManageProductsPage() {
                       </td>
                       <td className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-2 tabular-nums text-xs lg:text-xs">
                         {typeof product.stocks === "number" ? product.stocks : 0}
+                      </td>
+                      <td className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-2">
+                        {product.barcode ? (
+                          <BarcodeDisplay value={product.barcode} height={24} barWidth={1} fontSize={8} showText={false} className="text-foreground" />
+                        ) : (
+                          <span className="text-xs lg:text-[10px] text-muted-foreground/50">—</span>
+                        )}
                       </td>
                       <td className="hidden sm:table-cell px-3 py-2 lg:px-2 lg:py-2 text-right">
                         <div className="flex justify-end gap-1 sm:gap-2 lg:gap-1">
@@ -559,6 +575,11 @@ export default function ManageProductsPage() {
                 className="w-full rounded-full border border-input bg-muted/50 py-1.5 sm:py-2 lg:py-1.5 px-2 sm:px-3 lg:px-2 text-xs sm:text-sm lg:text-xs placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
+            <BarcodeScanner
+              value={form.barcode}
+              onScan={(code) => setForm((f) => ({ ...f, barcode: code }))}
+              onClear={() => setForm((f) => ({ ...f, barcode: "" }))}
+            />
             <div className="grid gap-0.5 sm:gap-1 lg:gap-0.5">
               <label htmlFor="product-image" className="text-xs lg:text-[11px] text-muted-foreground">
                 Image

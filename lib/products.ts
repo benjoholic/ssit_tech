@@ -10,20 +10,21 @@ export type Product = {
   price: number;
   stocks: number;
   image: string;
+  barcode: string;
 };
 
 export const PRODUCTS_STORAGE_KEY = "ssit_admin_products";
 
 export const INITIAL_PRODUCTS: Product[] = [
-  { id: "1", name: "Dome Camera HD 1080p", description: "Indoor/outdoor dome camera with 1080p resolution and night vision.", category: "cctv", price: 89.99, stocks: 0, image: "" },
-  { id: "2", name: "Bullet Camera 4MP", description: "Weatherproof bullet camera with 4MP resolution and wide dynamic range.", category: "cctv", price: 129.99, stocks: 0, image: "" },
-  { id: "3", name: "NVR 8-Channel", description: "Network video recorder supporting up to 8 cameras with PoE.", category: "cctv", price: 249.99, stocks: 0, image: "" },
-  { id: "4", name: "Indoor Access Point Wi-Fi 6", description: "Dual-band Wi-Fi 6 access point for high-density indoor deployment.", category: "access_point", price: 159.99, stocks: 0, image: "" },
-  { id: "5", name: "Outdoor Access Point Dual-Band", description: "Weatherproof outdoor AP with dual-band and mesh capability.", category: "access_point", price: 199.99, stocks: 0, image: "" },
-  { id: "6", name: "Mesh Access Point", description: "Seamless roaming mesh node for extended coverage.", category: "access_point", price: 139.99, stocks: 0, image: "" },
-  { id: "7", name: "Managed Switch 24-Port", description: "Layer 2 managed switch with 24 Gigabit ports and VLAN support.", category: "switch", price: 299.99, stocks: 0, image: "" },
-  { id: "8", name: "Unmanaged Switch 8-Port", description: "Plug-and-play 8-port Gigabit desktop switch.", category: "switch", price: 49.99, stocks: 0, image: "" },
-  { id: "9", name: "PoE Switch 16-Port", description: "16-port switch with PoE+ for cameras and access points.", category: "switch", price: 349.99, stocks: 0, image: "" },
+  { id: "1", name: "Dome Camera HD 1080p", description: "Indoor/outdoor dome camera with 1080p resolution and night vision.", category: "cctv", price: 89.99, stocks: 0, image: "", barcode: "" },
+  { id: "2", name: "Bullet Camera 4MP", description: "Weatherproof bullet camera with 4MP resolution and wide dynamic range.", category: "cctv", price: 129.99, stocks: 0, image: "", barcode: "" },
+  { id: "3", name: "NVR 8-Channel", description: "Network video recorder supporting up to 8 cameras with PoE.", category: "cctv", price: 249.99, stocks: 0, image: "", barcode: "" },
+  { id: "4", name: "Indoor Access Point Wi-Fi 6", description: "Dual-band Wi-Fi 6 access point for high-density indoor deployment.", category: "access_point", price: 159.99, stocks: 0, image: "", barcode: "" },
+  { id: "5", name: "Outdoor Access Point Dual-Band", description: "Weatherproof outdoor AP with dual-band and mesh capability.", category: "access_point", price: 199.99, stocks: 0, image: "", barcode: "" },
+  { id: "6", name: "Mesh Access Point", description: "Seamless roaming mesh node for extended coverage.", category: "access_point", price: 139.99, stocks: 0, image: "", barcode: "" },
+  { id: "7", name: "Managed Switch 24-Port", description: "Layer 2 managed switch with 24 Gigabit ports and VLAN support.", category: "switch", price: 299.99, stocks: 0, image: "", barcode: "" },
+  { id: "8", name: "Unmanaged Switch 8-Port", description: "Plug-and-play 8-port Gigabit desktop switch.", category: "switch", price: 49.99, stocks: 0, image: "", barcode: "" },
+  { id: "9", name: "PoE Switch 16-Port", description: "16-port switch with PoE+ for cameras and access points.", category: "switch", price: 349.99, stocks: 0, image: "", barcode: "" },
 ];
 
 /** Built-in labels. UI falls back to the raw slug for custom categories. */
@@ -52,6 +53,7 @@ function normalizeProduct(p: Record<string, unknown>): Product {
     price: typeof p.price === "number" && p.price >= 0 ? p.price : 0,
     stocks,
     image: typeof p.image === "string" ? p.image : "",
+    barcode: typeof p.barcode === "string" ? p.barcode : "",
   };
 }
 

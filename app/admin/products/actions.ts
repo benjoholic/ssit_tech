@@ -13,6 +13,7 @@ type Row = {
   price: number;
   stocks: number;
   image: string;
+  barcode: string;
 };
 
 function rowToProduct(r: Row): Product {
@@ -25,6 +26,7 @@ function rowToProduct(r: Row): Product {
     price: Number(r.price) >= 0 ? Number(r.price) : 0,
     stocks: Number.isInteger(r.stocks) && r.stocks >= 0 ? r.stocks : 0,
     image: r.image ?? "",
+    barcode: r.barcode ?? "",
   };
 }
 
@@ -33,7 +35,7 @@ export async function getProductsAction(): Promise<{ data: Product[]; error: str
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from(TABLE)
-      .select("id, name, description, category, price, stocks, image")
+      .select("id, name, description, category, price, stocks, image, barcode")
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -59,8 +61,9 @@ export async function addProductAction(product: Omit<Product, "id">): Promise<{ 
         price: product.price,
         stocks: product.stocks,
         image: product.image,
+        barcode: product.barcode,
       })
-      .select("id, name, description, category, price, stocks, image")
+      .select("id, name, description, category, price, stocks, image, barcode")
       .single();
 
     if (error) {
@@ -85,6 +88,7 @@ export async function updateProductAction(product: Product): Promise<{ error: st
         price: product.price,
         stocks: product.stocks,
         image: product.image,
+        barcode: product.barcode,
       })
       .eq("id", product.id);
 

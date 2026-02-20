@@ -38,7 +38,7 @@ export default async function AdminLayout({
     const { data } = await adminSupabase
       .from("product_categories")
       .select("id, name, label")
-      .order("created_at", { ascending: true });
+      .order("label", { ascending: true });
     categories = (data ?? []) as CategoryEntry[];
   } catch {
     // Fall back to empty – sidebar will show "No categories"

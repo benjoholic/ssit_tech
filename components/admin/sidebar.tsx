@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import {
   LayoutDashboard,
@@ -62,6 +62,11 @@ function AdminSidebarNav({ categories }: { categories: CategoryEntry[] }) {
   const setOpen = useAdminSidebar()?.setOpen;
   const closeOnNavigate = () => setOpen?.(false);
   const [signingOut, setSigningOut] = useState(false);
+
+  const sortedCategories = useMemo(
+    () => [...categories].sort((a, b) => a.label.localeCompare(b.label)),
+    [categories],
+  );
 
   const isProductsPath = pathname === PRODUCTS_PATH;
   const [isProductsOpen, setIsProductsOpen] = useState(isProductsPath);
@@ -188,7 +193,7 @@ function AdminSidebarNav({ categories }: { categories: CategoryEntry[] }) {
             {categories.length === 0 ? (
               <p className="px-3 py-2 text-xs text-muted-foreground/60">No categories</p>
             ) : (
-              categories.map(({ name, label }) => {
+              sortedCategories.map(({ name, label }) => {
                 const checked = selectedCategories.includes(name);
                 return (
                   <div

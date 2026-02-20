@@ -2,24 +2,20 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState, useEffect, useTransition, type ReactNode } from "react";
-import { LayoutGrid, List, Package, FilterX, Search, Camera, Wifi, Network } from "lucide-react";
-import { getProductsAction } from "@/app/admin/products/actions";
-import { CATEGORY_LABELS, type Product, type ProductCategory } from "@/lib/products";
+import { useMemo, useState, useEffect, useTransition } from "react";
+import { LayoutGrid, List, Package, FilterX, Search } from "lucide-react";
+import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
+import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
 import { NoResultsAnimation } from "@/components/admin/no-results-animation";
 
-const CATEGORY_ICONS: Record<string, ReactNode> = {
-  cctv: <Camera className="size-3.5" />,
-  access_point: <Wifi className="size-3.5" />,
-  switch: <Network className="size-3.5" />,
-};
-
-function parseCategories(searchParams: ReturnType<typeof useSearchParams>): ProductCategory[] {
+function parseCategories(
+  searchParams: ReturnType<typeof useSearchParams>,
+  knownCategories: Set<string>,
+): ProductCategory[] {
   const raw = searchParams.get("categories");
   if (!raw?.trim()) return [];
   const list = raw.split(",").map((s) => s.trim()).filter(Boolean);
-  const valid: ProductCategory[] = ["cctv", "access_point", "switch"];
-  return list.filter((c): c is ProductCategory => valid.includes(c as ProductCategory));
+  return list.filter((c): c is ProductCategory => knownCategories.has(c));
 }
 
 type ViewMode = "grid" | "list";
@@ -27,6 +23,7 @@ type ViewMode = "grid" | "list";
 export default function AdminProductsPage() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
+  const [dbCategories, setDbCategories] = useState<CategoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,16 +33,37 @@ export default function AdminProductsPage() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getProductsAction().then(({ data, error }) => {
-      if (mounted) {
-        setLoading(false);
-        if (!error) setProducts(data);
-      }
-    });
+    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+      ([prodRes, catRes]) => {
+        if (mounted) {
+          setLoading(false);
+          if (!prodRes.error) setProducts(prodRes.data);
+          if (!catRes.error) setDbCategories(catRes.data);
+        }
+      },
+    );
     return () => { mounted = false; };
   }, []);
 
-  const categories = useMemo(() => parseCategories(searchParams), [searchParams]);
+  // Build a merged label map: DB categories + hardcoded fallbacks + any category found on products
+  const categoryLabels = useMemo(() => {
+    const labels: Record<string, string> = { ...CATEGORY_LABELS };
+    for (const entry of dbCategories) {
+      labels[entry.name] = entry.label;
+    }
+    // Also include any category slug that exists on a product but isn't yet in the map
+    for (const p of products) {
+      if (p.category && !labels[p.category]) {
+        // Derive a readable label from the slug
+        labels[p.category] = p.category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+    }
+    return labels;
+  }, [dbCategories, products]);
+
+  const knownCategorySet = useMemo(() => new Set(Object.keys(categoryLabels)), [categoryLabels]);
+
+  const categories = useMemo(() => parseCategories(searchParams, knownCategorySet), [searchParams, knownCategorySet]);
 
   const filteredProducts = useMemo(() => {
     let result = products;
@@ -80,17 +98,16 @@ export default function AdminProductsPage() {
   }, [products, searchTerm]);
 
   const groupedProducts = useMemo(() => {
-    const categoryOrder = (Object.keys(CATEGORY_LABELS) as (keyof typeof CATEGORY_LABELS)[]).sort(
-      (a, b) => CATEGORY_LABELS[a].localeCompare(CATEGORY_LABELS[b])
-    );
-    return categoryOrder
+    const allSlugs = Object.keys(categoryLabels);
+    const sorted = allSlugs.sort((a, b) => categoryLabels[a].localeCompare(categoryLabels[b]));
+    return sorted
       .map((cat) => ({
         category: cat,
-        label: CATEGORY_LABELS[cat],
+        label: categoryLabels[cat],
         items: filteredProducts.filter((p) => p.category === cat),
       }))
       .filter((g) => g.items.length > 0);
-  }, [filteredProducts]);
+  }, [filteredProducts, categoryLabels]);
 
   const priceStr = (p: Product) =>
     typeof p.price === "number" ? p.price.toFixed(2) : "0.00";
@@ -154,7 +171,7 @@ export default function AdminProductsPage() {
                         {product.name}
                       </span>
                       <span className="ml-auto shrink-0 text-xs lg:text-[10px] text-muted-foreground">
-                        {CATEGORY_LABELS[product.category]}
+                        {categoryLabels[product.category] ?? product.category}
                       </span>
                     </button>
                   </li>
@@ -262,9 +279,6 @@ export default function AdminProductsPage() {
               <section key={group.category}>
                 <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="inline-flex items-center justify-center rounded-md bg-primary/10 p-1.5 text-primary">
-                      {CATEGORY_ICONS[group.category]}
-                    </span>
                     <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
                       {group.label}
                     </h2>
@@ -301,6 +315,46 @@ export default function AdminProductsPage() {
                       </div>
                     </li>
                   ))}
+                  {/* Skeleton placeholders to balance the last row */}
+                  {(() => {
+                    const count = group.items.length;
+                    const remSm = count % 2;           // remainder for 2-col
+                    const remLg = count % 3;           // remainder for 3-col
+                    const padSm = remSm === 0 ? 0 : 2 - remSm;
+                    const padLg = remLg === 0 ? 0 : 3 - remLg;
+                    const maxPad = Math.max(padSm, padLg);
+                    return Array.from({ length: maxPad }).map((_, i) => {
+                      // Determine visibility per breakpoint
+                      const showSm = i < padSm;
+                      const showLg = i < padLg;
+                      // If it shouldn't show at any breakpoint, skip
+                      if (!showSm && !showLg) return null;
+                      const vis = showSm && showLg
+                        ? "hidden sm:block"            // both sm & lg
+                        : showSm
+                          ? "hidden sm:block lg:hidden" // sm only
+                          : "hidden lg:block";          // lg only
+                      return (
+                        <li
+                          key={`skel-${i}`}
+                          className={`rounded-lg border border-dashed border-border bg-muted/30 overflow-hidden ${vis}`}
+                          aria-hidden
+                        >
+                          <div className="p-2 sm:p-4 lg:p-2 space-y-2 sm:space-y-3">
+                            <div className="h-4 sm:h-5 bg-muted/50 rounded w-3/4" />
+                            <div className="space-y-1 sm:space-y-2">
+                              <div className="h-3 sm:h-4 bg-muted/50 rounded w-full" />
+                              <div className="h-3 sm:h-4 bg-muted/50 rounded w-2/3" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-4 w-16 bg-muted/50 rounded" />
+                              <div className="h-3 w-20 bg-muted/50 rounded" />
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    });
+                  })()}
                 </ul>
               </section>
             ))}
@@ -313,9 +367,6 @@ export default function AdminProductsPage() {
               <section key={group.category}>
                 <div className="flex items-center gap-3 mb-3 sm:mb-4">
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="inline-flex items-center justify-center rounded-md bg-primary/10 p-1.5 text-primary">
-                      {CATEGORY_ICONS[group.category]}
-                    </span>
                     <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
                       {group.label}
                     </h2>

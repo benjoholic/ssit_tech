@@ -1,45 +1,54 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Package, Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
-import { getProductsAction } from "@/app/admin/products/actions";
-import {
-  CATEGORY_LABELS,
-  type Product,
-  type ProductCategory,
-} from "@/lib/products";
+import { useMemo, useState, useEffect, useTransition } from "react";
+import { LayoutGrid, List, Search } from "lucide-react";
+import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
+import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
+import { NoResultsAnimation } from "@/components/admin/no-results-animation";
 
-const ALL_CATEGORIES: ProductCategory[] = ["cctv", "access_point", "switch"];
+type ViewMode = "grid" | "list";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [dbCategories, setDbCategories] = useState<CategoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">("all");
-  const [gridCols, setGridCols] = useState<2 | 3 | 4>(3);
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
-'['
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isFiltering, startFiltering] = useTransition();
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getProductsAction().then(({ data, error }) => {
-      if (mounted) {
-        setLoading(false);
-        if (!error) setProducts(data);
-      }
-    });
+    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+      ([prodRes, catRes]) => {
+        if (mounted) {
+          setLoading(false);
+          if (!prodRes.error) setProducts(prodRes.data);
+          if (!catRes.error) setDbCategories(catRes.data);
+        }
+      },
+    );
     return () => { mounted = false; };
   }, []);
+
+  const categoryLabels = useMemo(() => {
+    const labels: Record<string, string> = { ...CATEGORY_LABELS };
+    for (const entry of dbCategories) {
+      labels[entry.name] = entry.label;
+    }
+    for (const p of products) {
+      if (p.category && !labels[p.category]) {
+        labels[p.category] = p.category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+    }
+    return labels;
+  }, [dbCategories, products]);
 
   const filteredProducts = useMemo(() => {
     let result = products;
 
-    if (activeCategory !== "all") {
-      result = result.filter((p) => p.category === activeCategory);
-    }
-
-    const query = search.trim().toLowerCase();
+    const query = searchTerm.trim().toLowerCase();
     if (query) {
       result = result.filter((p) => {
         const name = p.name?.toLowerCase() ?? "";
@@ -49,220 +58,348 @@ export default function ProductsPage() {
     }
 
     return result;
-  }, [products, activeCategory, search]);
+  }, [products, searchTerm]);
 
-  const gridClass =
-    gridCols === 2
-      ? "grid-cols-1 sm:grid-cols-2"
-      : gridCols === 3
-        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+  const searchSuggestions = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return [];
 
-  const imageUrl = (p: Product) =>
-    p.image && p.image.trim() ? p.image.trim() : null;
+    const byText = products.filter((p) => {
+      const name = p.name?.toLowerCase() ?? "";
+      const description = p.description?.toLowerCase() ?? "";
+      return name.includes(query) || description.includes(query);
+    });
+
+    return byText.slice(0, 8);
+  }, [products, searchTerm]);
+
+  const groupedProducts = useMemo(() => {
+    const allSlugs = Object.keys(categoryLabels);
+    const sorted = allSlugs.sort((a, b) => categoryLabels[a].localeCompare(categoryLabels[b]));
+    return sorted
+      .map((cat) => ({
+        category: cat,
+        label: categoryLabels[cat],
+        items: filteredProducts.filter((p) => p.category === cat),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [filteredProducts, categoryLabels]);
+
+  const priceStr = (p: Product) =>
+    typeof p.price === "number" ? p.price.toFixed(2) : "0.00";
+  const imageUrl = (p: Product) => (p.image && p.image.trim() ? p.image.trim() : null);
 
   return (
-    <main className="min-h-screen w-full px-4 py-6 md:px-8 lg:px-12">
-      {/* Page header */}
-      <section className="mb-6 md:mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          Products
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {loading
-            ? "Loading…"
-            : `Showing ${filteredProducts.length} product${filteredProducts.length !== 1 ? "s" : ""}.`}
-        </p>
-      </section>
-
-      {/* Filters bar */}
-      <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Category pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setActiveCategory("all")}
-            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
-              activeCategory === "all"
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-100"
-            }`}
-          >
-            All
-          </button>
-          {ALL_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all ${
-                activeCategory === cat
-                  ? "bg-zinc-900 text-white shadow-sm"
-                  : "border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-100"
-              }`}
-            >
-              {CATEGORY_LABELS[cat]}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid toggle + Search */}
-        <div className="flex items-center gap-3">
-          <div className="flex rounded-lg border border-zinc-200 bg-white p-0.5">
-            {(
-              [
-                { cols: 2, icon: Grid2x2, label: "2 columns" },
-                { cols: 3, icon: Grid3x3, label: "3 columns" },
-                { cols: 4, icon: LayoutGrid, label: "4 columns" },
-              ] as const
-            ).map(({ cols, icon: Icon, label }) => (
-              <button
-                key={cols}
-                type="button"
-                aria-label={label}
-                onClick={() => setGridCols(cols)}
-                className={`rounded-md p-1.5 transition-colors ${
-                  gridCols === cols
-                    ? "bg-zinc-900 text-white"
-                    : "text-zinc-400 hover:text-zinc-700"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            ))}
-          </div>
-
-          <div className="relative w-full md:w-64">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
-              <svg
-                className="h-4 w-4"
-                viewBox="0 0 20 20"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M9.5 3.5a6 6 0 1 0 3.78 10.68l2.77 2.77a.75.75 0 1 0 1.06-1.06l-2.77-2.77A6 6 0 0 0 9.5 3.5Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search products..."
-              className="h-9 w-full rounded-full border border-input bg-background pl-9 pr-16 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+    <main className="min-h-full bg-muted/30 px-4 py-8 lg:px-3 lg:py-6">
+      <div className="mx-auto max-w-6xl lg:max-w-5xl space-y-4 sm:space-y-6 lg:space-y-3">
+      <div className="sticky top-0 z-20 flex flex-col gap-3 border-b-2 border-border bg-muted/80 px-3 py-2 backdrop-blur sm:gap-4 sm:flex-row sm:items-center sm:justify-between lg:gap-2">
+        <div className="w-full sm:flex-1 sm:max-w-md">
+          <label htmlFor="products-search" className="sr-only">
+            Search products
+          </label>
+          <div className="relative w-full">
+            <Search
+              className="pointer-events-none absolute left-2.5 sm:left-3 lg:left-2.5 top-1/2 h-3.5 sm:h-4 lg:h-3 w-3.5 sm:w-4 lg:w-3 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
             />
-            {search && (
+            <input
+              id="products-search"
+              type="search"
+              value={searchTerm}
+              onChange={(e) => {
+                const value = e.target.value;
+                startFiltering(() => setSearchTerm(value));
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => {
+                setTimeout(() => setShowSuggestions(false), 100);
+              }}
+              placeholder="Search…"
+              className="w-full rounded-full border border-foreground/40 bg-background py-1.5 sm:py-2 lg:py-1.5 pl-8 sm:pl-9 lg:pl-8 pr-14 text-xs sm:text-sm lg:text-xs placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+            {searchTerm.trim().length > 0 && (
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  searchInputRef.current?.focus();
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  startFiltering(() => setSearchTerm(""));
+                  setShowSuggestions(false);
                 }}
-                className="absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground hover:text-foreground"
+                className="absolute right-2.5 sm:right-3 lg:right-2.5 top-1/2 -translate-y-1/2 rounded-full px-2 py-0.5 text-[10px] sm:text-xs lg:text-[10px] font-medium text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
               >
                 Clear
               </button>
             )}
+            {showSuggestions && searchSuggestions.length > 0 && (
+              <ul className="absolute z-20 mt-1 max-h-64 w-full rounded-md border border-border bg-card py-1 text-xs sm:text-sm shadow-lg">
+                {searchSuggestions.map((product) => (
+                  <li key={product.id}>
+                    <button
+                      type="button"
+                      className="flex w-full items-start gap-1 sm:gap-2 lg:gap-1 px-2 sm:px-3 lg:px-2 py-1 sm:py-1.5 lg:py-1 text-left hover:bg-muted/70"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        startFiltering(() => setSearchTerm(product.name ?? ""));
+                      }}
+                    >
+                      <span className="truncate font-medium text-foreground text-xs sm:text-sm lg:text-xs">
+                        {product.name}
+                      </span>
+                      <span className="ml-auto shrink-0 text-xs lg:text-[10px] text-muted-foreground">
+                        {categoryLabels[product.category] ?? product.category}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
-      </section>
+        <div className="flex w-full sm:w-auto shrink-0 items-center gap-2 sm:gap-3 lg:gap-2">
+          <div className="flex rounded-md border border-border bg-muted/30 p-0.5">
+            <button
+              type="button"
+              onClick={() => setViewMode("grid")}
+              className={`rounded border-0 bg-transparent p-1.5 sm:p-2 lg:p-1.5 transition-colors ${
+                viewMode === "grid" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label="Grid view"
+            >
+              <LayoutGrid className="size-3 sm:size-4 lg:size-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`rounded border-0 bg-transparent p-1.5 sm:p-2 lg:p-1.5 transition-colors ${
+                viewMode === "list" ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-label="List view"
+            >
+              <List className="size-3 sm:size-4 lg:size-3" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Content */}
-      <section>
-        {loading ? (
-          <div className={`grid gap-4 ${gridClass}`}>
+      <div className={`transition-opacity duration-500 ${isFiltering ? "opacity-60" : "opacity-100"}`}>
+        {loading && viewMode === "grid" && (
+          <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <article
+              <li
                 key={i}
-                className="flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm"
+                className="rounded-lg border border-border bg-card overflow-hidden shadow-sm"
               >
-                <div className="aspect-[4/3] w-full animate-pulse bg-muted" />
-                <div className="space-y-2 p-4">
-                  <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-full animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="flex min-h-[200px] flex-col items-center justify-center rounded-lg border border-dashed py-16">
-            <Package className="mb-3 h-10 w-10 text-zinc-300" />
-            <p className="text-sm font-medium">No products found</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Try adjusting your search or filters.
-            </p>
-          </div>
-        ) : (
-          <div className={`grid gap-4 ${gridClass}`}>
-            {filteredProducts.map((product) => (
-              <article
-                key={product.id}
-                className="group flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm transition hover:shadow-md"
-              >
-                {/* Image */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-                  {imageUrl(product) ? (
-                    <Image
-                      src={imageUrl(product)!}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes={
-                        gridCols === 2
-                          ? "(max-width: 640px) 100vw, 50vw"
-                          : gridCols === 3
-                            ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      }
-                    />
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-zinc-50">
-                      <Package className="h-10 w-10 text-zinc-300" />
-                      <span className="text-xs font-medium text-zinc-400">
-                        No image available
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex flex-1 flex-col p-4">
-                  <span className="mb-1.5 inline-block w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-[0.65rem] font-medium text-zinc-600">
-                    {CATEGORY_LABELS[product.category]}
-                  </span>
-                  <h2 className="text-sm font-semibold">{product.name}</h2>
-                  <p className="mt-1 flex-1 text-xs leading-relaxed text-muted-foreground">
-                    {product.description}
-                  </p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-sm font-bold">
-                      ₱{product.price.toFixed(2)}
-                    </span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[0.65rem] font-medium ${
-                        product.stocks > 0
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-red-50 text-red-600"
-                      }`}
-                    >
-                      {product.stocks > 0
-                        ? `${product.stocks} in stock`
-                        : "Out of stock"}
-                    </span>
+                <div className="relative aspect-[4/3] w-full bg-muted animate-pulse" />
+                <div className="p-2 sm:p-4 space-y-2 sm:space-y-3">
+                  <div className="h-4 sm:h-5 bg-muted rounded animate-pulse" />
+                  <div className="space-y-1 sm:space-y-2">
+                    <div className="h-3 sm:h-4 bg-muted rounded animate-pulse" />
+                    <div className="h-3 sm:h-4 bg-muted rounded w-3/4 animate-pulse" />
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                    <div className="h-5 w-20 bg-muted rounded-full animate-pulse" />
+                    <div className="h-5 w-16 bg-muted rounded animate-pulse" />
+                    <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                   </div>
                 </div>
-              </article>
+              </li>
+            ))}
+          </ul>
+        )}
+        {loading && viewMode === "list" && (
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border bg-muted/50">
+                  <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Image</th>
+                  <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Description</th>
+                  <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Category</th>
+                  <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i} className="border-b border-border last:border-0">
+                    <td className="px-4 py-4 lg:px-3 lg:py-3">
+                      <div className="h-32 sm:h-40 w-32 sm:w-40 bg-muted rounded-md animate-pulse" />
+                    </td>
+                    <td className="px-4 py-4 lg:px-3 lg:py-3">
+                      <div className="space-y-2">
+                        <div className="h-4 bg-muted rounded animate-pulse w-48" />
+                        <div className="h-3 bg-muted rounded animate-pulse w-full" />
+                        <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 lg:px-3 lg:py-3">
+                      <div className="h-6 bg-muted rounded-full animate-pulse w-24" />
+                    </td>
+                    <td className="px-4 py-4 lg:px-3 lg:py-3">
+                      <div className="h-4 bg-muted rounded animate-pulse w-20" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {!loading && viewMode === "grid" && (
+          <div className="space-y-8">
+            {groupedProducts.map((group) => (
+              <section key={group.category}>
+                <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
+                      {group.label}
+                    </h2>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      {group.items.length}
+                    </span>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
+                </div>
+                <ul className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.items.map((product) => (
+                    <li
+                      key={product.id}
+                      className="rounded-lg border border-border bg-card overflow-hidden shadow-sm transition-shadow hover:shadow"
+                    >
+                      {imageUrl(product) && (
+                        <div className="relative aspect-[4/3] w-full bg-muted">
+                          <img
+                            src={imageUrl(product)!}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-2 sm:p-4 lg:p-2">
+                        <p className="font-medium text-sm sm:text-base lg:text-sm text-foreground">{product.name}</p>
+                        {product.description && (
+                          <p className="mt-0.5 sm:mt-1 lg:mt-0.5 text-xs sm:text-sm lg:text-xs text-muted-foreground line-clamp-2">{product.description}</p>
+                        )}
+                        <div className="mt-1 sm:mt-2 lg:mt-1 flex flex-wrap items-center gap-1 sm:gap-2 lg:gap-1">
+                          <span className="font-semibold text-xs sm:text-sm lg:text-xs text-foreground">₱{priceStr(product)}</span>
+                          <span className="text-muted-foreground text-xs lg:text-[10px]">Stocks: {typeof product.stocks === "number" ? product.stocks : 0}</span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                  {/* Skeleton placeholders to balance the last row */}
+                  {(() => {
+                    const count = group.items.length;
+                    const remSm = count % 2;
+                    const remLg = count % 3;
+                    const padSm = remSm === 0 ? 0 : 2 - remSm;
+                    const padLg = remLg === 0 ? 0 : 3 - remLg;
+                    const maxPad = Math.max(padSm, padLg);
+                    return Array.from({ length: maxPad }).map((_, i) => {
+                      const showSm = i < padSm;
+                      const showLg = i < padLg;
+                      if (!showSm && !showLg) return null;
+                      const vis = showSm && showLg
+                        ? "hidden sm:block"
+                        : showSm
+                          ? "hidden sm:block lg:hidden"
+                          : "hidden lg:block";
+                      return (
+                        <li
+                          key={`skel-${i}`}
+                          className={`rounded-lg border border-dashed border-border bg-muted/30 overflow-hidden ${vis}`}
+                          aria-hidden
+                        >
+                          <div className="p-2 sm:p-4 lg:p-2 space-y-2 sm:space-y-3">
+                            <div className="h-4 sm:h-5 bg-muted/50 rounded w-3/4" />
+                            <div className="space-y-1 sm:space-y-2">
+                              <div className="h-3 sm:h-4 bg-muted/50 rounded w-full" />
+                              <div className="h-3 sm:h-4 bg-muted/50 rounded w-2/3" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="h-4 w-16 bg-muted/50 rounded" />
+                              <div className="h-3 w-20 bg-muted/50 rounded" />
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    });
+                  })()}
+                </ul>
+              </section>
             ))}
           </div>
         )}
-      </section>
+
+        {!loading && viewMode === "list" && (
+          <div className="space-y-8">
+            {groupedProducts.map((group) => (
+              <section key={group.category}>
+                <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
+                      {group.label}
+                    </h2>
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] sm:text-xs font-medium text-muted-foreground">
+                      {group.items.length}
+                    </span>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
+                </div>
+                <div className="rounded-lg border border-border bg-card overflow-hidden">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/50">
+                        <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Image</th>
+                        <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Description</th>
+                        <th className="px-4 py-3 lg:px-3 lg:py-2 text-left font-medium text-sm lg:text-xs text-foreground">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.items.map((product) => (
+                        <tr key={product.id} className="border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
+                          <td className="px-4 py-4 lg:px-3 lg:py-3">
+                            <div className="h-32 sm:h-40 w-32 sm:w-40 shrink-0 overflow-hidden rounded-md bg-muted">
+                              {imageUrl(product) ? (
+                                <img
+                                  src={imageUrl(product)!}
+                                  alt=""
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-muted-foreground text-xs px-1">
+                                  No image
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 lg:px-3 lg:py-3">
+                            <div className="max-w-sm">
+                              <p className="font-medium text-sm lg:text-xs text-foreground mb-1">{product.name}</p>
+                              {product.description && (
+                                <p className="text-xs lg:text-[10px] text-muted-foreground line-clamp-3">{product.description}</p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 lg:px-3 lg:py-3">
+                            <span className="font-semibold text-sm lg:text-xs text-foreground">₱{priceStr(product)}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+
+        {!loading && groupedProducts.length === 0 && (
+          <NoResultsAnimation
+            message="No products found"
+            isSearching={searchTerm.trim().length > 0}
+          />
+        )}
+      </div>
+    </div>
     </main>
   );
 }

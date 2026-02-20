@@ -4,17 +4,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Search, Package, LayoutGrid, ChevronDown } from "lucide-react";
-import { getProductsAction } from "@/app/admin/products/actions";
+import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
 import {
   CATEGORY_LABELS,
   type Product,
   type ProductCategory,
+  type CategoryEntry,
 } from "@/lib/products";
-
-const ALL_CATEGORIES: ProductCategory[] = ["cctv", "access_point", "switch"];
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [dbCategories, setDbCategories] = useState<CategoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">(
     "all",
@@ -26,15 +26,40 @@ export default function ProductsPage() {
 
   const gridClass = "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
 
+  // Build a merged label map: DB categories + hardcoded fallbacks + product slugs
+  const categoryLabels = useMemo(() => {
+    const labels: Record<string, string> = { ...CATEGORY_LABELS };
+    for (const entry of dbCategories) {
+      labels[entry.name] = entry.label;
+    }
+    for (const p of products) {
+      if (p.category && !labels[p.category]) {
+        labels[p.category] = p.category.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+    }
+    return labels;
+  }, [dbCategories, products]);
+
+  // Derive the list of categories that actually have products
+  const allCategories = useMemo(() => {
+    const slugsWithProducts = new Set(products.map((p) => p.category));
+    return Object.keys(categoryLabels)
+      .filter((slug) => slugsWithProducts.has(slug))
+      .sort((a, b) => categoryLabels[a].localeCompare(categoryLabels[b]));
+  }, [categoryLabels, products]);
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    getProductsAction().then(({ data, error }) => {
-      if (mounted) {
-        setLoading(false);
-        if (!error) setProducts(data);
-      }
-    });
+    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+      ([prodRes, catRes]) => {
+        if (mounted) {
+          setLoading(false);
+          if (!prodRes.error) setProducts(prodRes.data);
+          if (!catRes.error) setDbCategories(catRes.data);
+        }
+      },
+    );
     return () => {
       mounted = false;
     };
@@ -156,7 +181,7 @@ export default function ProductsPage() {
                               {product.name}
                             </p>
                             <p className="text-xs text-zinc-500">
-                              {CATEGORY_LABELS[product.category]}
+                              {categoryLabels[product.category] ?? product.category}
                             </p>
                           </div>
                         </div>
@@ -184,7 +209,7 @@ export default function ProductsPage() {
             >
               {activeCategory === "all"
                 ? "All Categories"
-                : CATEGORY_LABELS[activeCategory]}
+                : categoryLabels[activeCategory] ?? activeCategory}
               <ChevronDown
                 className={`h-4 w-4 text-zinc-400 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
               />
@@ -208,7 +233,7 @@ export default function ProductsPage() {
                 >
                   All Categories
                 </button>
-                {ALL_CATEGORIES.map((cat) => (
+                {allCategories.map((cat) => (
                   <button
                     key={cat}
                     type="button"
@@ -222,7 +247,7 @@ export default function ProductsPage() {
                         : "text-zinc-700 hover:bg-zinc-50"
                     }`}
                   >
-                    {CATEGORY_LABELS[cat]}
+                    {categoryLabels[cat]}
                   </button>
                 ))}
               </div>
@@ -309,7 +334,7 @@ export default function ProductsPage() {
                     {/* Info */}
                     <div className="flex flex-1 flex-col p-6">
                       <span className="mb-2 inline-block w-fit rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600">
-                        {CATEGORY_LABELS[product.category]}
+                        {categoryLabels[product.category] ?? product.category}
                       </span>
                       <h3 className="mb-2 line-clamp-2 text-base font-semibold text-zinc-800">
                         {product.name}

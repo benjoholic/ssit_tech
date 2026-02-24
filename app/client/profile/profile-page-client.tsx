@@ -574,8 +574,6 @@ export default function ClientProfilePage({
                     maxLength={280}
                   />
                 </Field>
-
-
               </CardContent>
 
               <CardFooter className="border-t justify-between gap-3">

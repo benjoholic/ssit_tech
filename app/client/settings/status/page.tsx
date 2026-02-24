@@ -1,9 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import { User, Mail, Calendar, Shield, CheckCircle2, Clock, Building2, Phone } from "lucide-react";
+import {
+  User,
+  Mail,
+  Calendar,
+  Shield,
+  CheckCircle2,
+  Clock,
+  Building2,
+  Phone,
+} from "lucide-react";
 
-function Avatar({ name, email, imageSrc }: { name?: string; email?: string; imageSrc?: string }) {
+function Avatar({
+  name,
+  email,
+  imageSrc,
+}: {
+  name?: string;
+  email?: string;
+  imageSrc?: string;
+}) {
   const initials = name
     ? name
         .split(" ")
@@ -12,8 +29,8 @@ function Avatar({ name, email, imageSrc }: { name?: string; email?: string; imag
         .toUpperCase()
         .slice(0, 2)
     : email
-    ? email[0].toUpperCase()
-    : "U";
+      ? email[0].toUpperCase()
+      : "U";
 
   return (
     <div className="relative flex h-40 w-40 items-center justify-center overflow-hidden rounded-full bg-primary shadow-lg ring-4 ring-background">
@@ -26,7 +43,9 @@ function Avatar({ name, email, imageSrc }: { name?: string; email?: string; imag
           priority
         />
       ) : (
-        <span className="text-4xl font-semibold text-primary-foreground">{initials}</span>
+        <span className="text-4xl font-semibold text-primary-foreground">
+          {initials}
+        </span>
       )}
     </div>
   );
@@ -47,7 +66,9 @@ function InfoCard({
         <Icon className="h-5 w-5" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {label}
+        </p>
         <p className="mt-2 text-sm font-semibold text-foreground">{value}</p>
       </div>
     </div>
@@ -72,7 +93,9 @@ function LogoPattern() {
           strokeLinejoin="round"
         />
       </svg>
-      <span className="text-[11px] font-bold uppercase tracking-tight">SSIT TECH</span>
+      <span className="text-[11px] font-bold uppercase tracking-tight">
+        SSIT TECH
+      </span>
     </div>
   );
   const positions = [
@@ -92,16 +115,22 @@ function LogoPattern() {
     { top: "84%", left: "70%" },
     { top: "76%", left: "94%" },
   ];
-  
+
   // Generate CSS rules dynamically to avoid inline styles
-  const cssRules = positions.map((pos, i) => 
-    `.watermark-item-${i} { top: ${pos.top}; left: ${pos.left}; }`
-  ).join('\n');
-  
+  const cssRules = positions
+    .map(
+      (pos, i) =>
+        `.watermark-item-${i} { top: ${pos.top}; left: ${pos.left}; }`,
+    )
+    .join("\n");
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cssRules }} />
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <div
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        aria-hidden
+      >
         {positions.map((pos, i) => (
           <div
             key={i}
@@ -155,11 +184,14 @@ export default async function ClientSettingsStatusPage() {
     redirect("/unauthenticated");
   }
   const userMetadata = user.user_metadata || {};
-  const fullName = userMetadata.full_name || user.email?.split("@")[0] || "User";
+  const fullName =
+    userMetadata.full_name || user.email?.split("@")[0] || "User";
   const email = user.email || "No email";
   const emailVerified = user.email_confirmed_at !== null;
   const createdAt = user.created_at ? new Date(user.created_at) : null;
-  const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at) : null;
+  const lastSignIn = user.last_sign_in_at
+    ? new Date(user.last_sign_in_at)
+    : null;
 
   return (
     <main className="min-h-screen bg-muted/30">
@@ -167,7 +199,9 @@ export default async function ClientSettingsStatusPage() {
         {/* Header */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">Account Status</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Account Status
+            </h1>
             <p className="text-sm text-muted-foreground">
               Track and manage your account information
             </p>
@@ -181,9 +215,9 @@ export default async function ClientSettingsStatusPage() {
           <div className="relative z-10 flex flex-col items-center gap-8">
             {/* Profile Picture */}
             <div className="flex shrink-0 justify-center">
-              <Avatar 
-                name={fullName} 
-                email={email} 
+              <Avatar
+                name={fullName}
+                email={email}
                 imageSrc={userMetadata.avatar_url || undefined}
               />
             </div>
@@ -191,7 +225,9 @@ export default async function ClientSettingsStatusPage() {
             {/* Profile Details */}
             <div className="w-full space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">{fullName}</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {fullName}
+                </h2>
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-base text-muted-foreground">{email}</p>
                   {emailVerified && (
@@ -201,11 +237,7 @@ export default async function ClientSettingsStatusPage() {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <InfoCard
-                  icon={User}
-                  label="Full Name"
-                  value={fullName}
-                />
+                <InfoCard icon={User} label="Full Name" value={fullName} />
                 <InfoCard
                   icon={Mail}
                   label="Email Address"
@@ -267,17 +299,23 @@ export default async function ClientSettingsStatusPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-sm text-muted-foreground">Account Status</span>
+                <span className="text-sm text-muted-foreground">
+                  Account Status
+                </span>
                 <StatusBadge verified={emailVerified} />
               </div>
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-sm text-muted-foreground">Email Verified</span>
+                <span className="text-sm text-muted-foreground">
+                  Email Verified
+                </span>
                 <span className="text-sm font-medium">
                   {emailVerified ? "Yes" : "No"}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Member Since</span>
+                <span className="text-sm text-muted-foreground">
+                  Member Since
+                </span>
                 <span className="text-sm font-medium">
                   {createdAt
                     ? createdAt.toLocaleDateString("en-US", {
@@ -298,13 +336,17 @@ export default async function ClientSettingsStatusPage() {
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-sm text-muted-foreground">Total Sessions</span>
+                <span className="text-sm text-muted-foreground">
+                  Total Sessions
+                </span>
                 <span className="text-sm font-medium">
                   {lastSignIn ? "Active" : "New Account"}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-sm text-muted-foreground">Last Activity</span>
+                <span className="text-sm text-muted-foreground">
+                  Last Activity
+                </span>
                 <span className="text-sm font-medium">
                   {lastSignIn
                     ? lastSignIn.toLocaleDateString("en-US", {
@@ -315,11 +357,14 @@ export default async function ClientSettingsStatusPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-sm text-muted-foreground">Account Age</span>
+                <span className="text-sm text-muted-foreground">
+                  Account Age
+                </span>
                 <span className="text-sm font-medium">
                   {createdAt
                     ? `${Math.floor(
-                        (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+                        (Date.now() - createdAt.getTime()) /
+                          (1000 * 60 * 60 * 24),
                       )} days`
                     : "N/A"}
                 </span>

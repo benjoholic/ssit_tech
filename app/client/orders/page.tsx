@@ -85,7 +85,8 @@ export default function OrdersPage() {
   const [submitting, setSubmitting] = useState(false);
 
   // Form state
-  const [selectedProductId, setSelectedProductId] = useState(preselectedProductId);
+  const [selectedProductId, setSelectedProductId] =
+    useState(preselectedProductId);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
 
@@ -121,7 +122,10 @@ export default function OrdersPage() {
   );
 
   const canSubmit =
-    !submitting && selectedProductId && quantity >= 1 && message.trim().length > 0;
+    !submitting &&
+    selectedProductId &&
+    quantity >= 1 &&
+    message.trim().length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

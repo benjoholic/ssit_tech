@@ -177,7 +177,9 @@ export default function ClientDashboard({
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Total Stock</p>
-                <p className="text-xl font-bold">{totalStock.toLocaleString()}</p>
+                <p className="text-xl font-bold">
+                  {totalStock.toLocaleString()}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -189,7 +191,9 @@ export default function ClientDashboard({
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">Member Since</p>
-                <p className="text-sm font-semibold truncate">{formatDate(createdAt)}</p>
+                <p className="text-sm font-semibold truncate">
+                  {formatDate(createdAt)}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -204,7 +208,9 @@ export default function ClientDashboard({
               <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
                 <div>
                   <CardTitle className="text-base">Latest Products</CardTitle>
-                  <CardDescription>Recently added to the catalog</CardDescription>
+                  <CardDescription>
+                    Recently added to the catalog
+                  </CardDescription>
                 </div>
                 <Link
                   href="/client/products"

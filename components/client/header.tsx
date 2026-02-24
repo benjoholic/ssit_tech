@@ -82,7 +82,7 @@ export function ClientHeader({
           </Button>
         )}
         <Link
-          href="/client/home"
+          href="/"
           className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-90"
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">

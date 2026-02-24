@@ -3,7 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Box, Users, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Home, Box, Users, Mail, LayoutDashboard, LogIn } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const navLinks = [
   { href: "/", label: "Home", icon: Home },
@@ -19,6 +21,22 @@ function isActivePath(pathname: string, href: string) {
 
 export function Header() {
   const pathname = usePathname();
+  const [dashboardHref, setDashboardHref] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setDashboardHref(
+          data.user.user_metadata?.is_admin ? "/admin/home" : "/client/home",
+        );
+      } else {
+        setDashboardHref(null);
+      }
+      setAuthLoading(false);
+    });
+  }, []);
 
   return (
     <>
@@ -28,9 +46,9 @@ export function Header() {
             <Image
               src="/favicon.ico"
               alt="SSIT Tech Logo"
-              width={140}
-              height={140}
-              className="absolute -top-7.5 left-0 rounded-lg drop-shadow-md"
+              width={120}
+              height={120}
+              className="absolute -top-6.5 left-0 rounded-lg drop-shadow-md"
             />
             <div className="w-35" />
           </Link>
@@ -53,6 +71,23 @@ export function Header() {
                 </Link>
               );
             })}
+            {!authLoading &&
+              (dashboardHref ? (
+                <Link
+                  href={dashboardHref}
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-zinc-700"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/credentials/client/login"
+                  className="ml-2 flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-zinc-700"
+                >
+                  Sign In
+                </Link>
+              ))}
           </nav>
         </div>
       </header>
@@ -81,6 +116,28 @@ export function Header() {
               </Link>
             );
           })}
+          {!authLoading &&
+            (dashboardHref ? (
+              <Link
+                href={dashboardHref}
+                className="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl bg-zinc-900 px-3 py-2 text-white shadow-sm transition-all"
+              >
+                <LayoutDashboard className="h-5 w-5 text-white" />
+                <span className="text-[0.65rem] font-medium leading-none">
+                  Dashboard
+                </span>
+              </Link>
+            ) : (
+              <Link
+                href="/credentials/client/login"
+                className="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl bg-zinc-900 px-3 py-2 text-white shadow-sm transition-all"
+              >
+                <LogIn className="h-5 w-5 text-white" />
+                <span className="text-[0.65rem] font-medium leading-none">
+                  Login
+                </span>
+              </Link>
+            ))}
         </div>
       </nav>
     </>

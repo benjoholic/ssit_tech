@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ConditionalHeader } from "@/components/conditional-header";
+import { ConditionalFooter } from "@/components/conditional-footer";
 import { ClientSidebarProvider } from "@/components/client/sidebar-context";
 import { AdminSidebarProvider } from "@/components/admin/sidebar-context";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({
           <AdminSidebarProvider>
             <ConditionalHeader />
             {children}
+            <ConditionalFooter />
           </AdminSidebarProvider>
         </ClientSidebarProvider>
         <Toaster richColors position="bottom-right" />

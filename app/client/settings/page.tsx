@@ -20,9 +20,7 @@ export default async function ClientSettingsPage() {
   const email = user.email ?? "";
   const fullName = user.user_metadata?.full_name ?? "";
   const provider =
-    user.app_metadata?.provider ??
-    user.app_metadata?.providers?.[0] ??
-    "email";
+    user.app_metadata?.provider ?? user.app_metadata?.providers?.[0] ?? "email";
   const createdAt = user.created_at ?? "";
 
   return (

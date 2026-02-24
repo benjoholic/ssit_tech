@@ -56,7 +56,9 @@ function applyTheme(theme: Theme) {
   localStorage.setItem("theme", theme);
 
   if (theme === "system") {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
     root.classList.toggle("dark", prefersDark);
   } else {
     root.classList.toggle("dark", theme === "dark");
@@ -120,10 +122,12 @@ export default function SettingsContent({
     setTheme(getStoredTheme());
 
     const storedEmailNotifs = localStorage.getItem("pref_email_notifs");
-    if (storedEmailNotifs !== null) setEmailNotifs(storedEmailNotifs === "true");
+    if (storedEmailNotifs !== null)
+      setEmailNotifs(storedEmailNotifs === "true");
 
     const storedOrderNotifs = localStorage.getItem("pref_order_notifs");
-    if (storedOrderNotifs !== null) setOrderNotifs(storedOrderNotifs === "true");
+    if (storedOrderNotifs !== null)
+      setOrderNotifs(storedOrderNotifs === "true");
   }, []);
 
   const handleThemeChange = useCallback((newTheme: Theme) => {
@@ -136,7 +140,9 @@ export default function SettingsContent({
     setEmailNotifs((prev) => {
       const next = !prev;
       localStorage.setItem("pref_email_notifs", String(next));
-      toast.success(next ? "Email notifications enabled" : "Email notifications disabled");
+      toast.success(
+        next ? "Email notifications enabled" : "Email notifications disabled",
+      );
       return next;
     });
   }, []);
@@ -145,7 +151,9 @@ export default function SettingsContent({
     setOrderNotifs((prev) => {
       const next = !prev;
       localStorage.setItem("pref_order_notifs", String(next));
-      toast.success(next ? "Order notifications enabled" : "Order notifications disabled");
+      toast.success(
+        next ? "Order notifications enabled" : "Order notifications disabled",
+      );
       return next;
     });
   }, []);
@@ -246,7 +254,12 @@ export default function SettingsContent({
     }
   }
 
-  const themeOptions: { value: Theme; label: string; icon: typeof Sun; description: string }[] = [
+  const themeOptions: {
+    value: Theme;
+    label: string;
+    icon: typeof Sun;
+    description: string;
+  }[] = [
     {
       value: "light",
       label: "Light",
@@ -293,11 +306,15 @@ export default function SettingsContent({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
                 <span className="text-sm text-muted-foreground">Name</span>
-                <span className="text-sm font-medium">{fullName || "Not set"}</span>
+                <span className="text-sm font-medium">
+                  {fullName || "Not set"}
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
                 <span className="text-sm text-muted-foreground">Email</span>
-                <span className="text-sm font-medium truncate ml-2">{email}</span>
+                <span className="text-sm font-medium truncate ml-2">
+                  {email}
+                </span>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
                 <span className="text-sm text-muted-foreground">Provider</span>
@@ -306,8 +323,12 @@ export default function SettingsContent({
                 </Badge>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-3">
-                <span className="text-sm text-muted-foreground">Member since</span>
-                <span className="text-sm font-medium">{formatDate(createdAt)}</span>
+                <span className="text-sm text-muted-foreground">
+                  Member since
+                </span>
+                <span className="text-sm font-medium">
+                  {formatDate(createdAt)}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -470,7 +491,10 @@ export default function SettingsContent({
               {showPasswordSection && (
                 <div className="space-y-3 pt-2 border-t border-border">
                   <div className="space-y-2">
-                    <label htmlFor="new-password" className="text-xs font-semibold">
+                    <label
+                      htmlFor="new-password"
+                      className="text-xs font-semibold"
+                    >
                       New Password
                     </label>
                     <div className="relative">
@@ -497,7 +521,10 @@ export default function SettingsContent({
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="confirm-password" className="text-xs font-semibold">
+                    <label
+                      htmlFor="confirm-password"
+                      className="text-xs font-semibold"
+                    >
                       Confirm Password
                     </label>
                     <input
@@ -510,13 +537,15 @@ export default function SettingsContent({
                       autoComplete="new-password"
                     />
                   </div>
-                  {newPassword && confirmPassword && newPassword !== confirmPassword && (
-                    <Alert variant="destructive">
-                      <AlertDescription className="text-xs">
-                        Passwords do not match.
-                      </AlertDescription>
-                    </Alert>
-                  )}
+                  {newPassword &&
+                    confirmPassword &&
+                    newPassword !== confirmPassword && (
+                      <Alert variant="destructive">
+                        <AlertDescription className="text-xs">
+                          Passwords do not match.
+                        </AlertDescription>
+                      </Alert>
+                    )}
                   <Button
                     onClick={handleChangePassword}
                     disabled={
@@ -567,7 +596,10 @@ export default function SettingsContent({
               {showEmailSection && (
                 <div className="space-y-3 pt-2 border-t border-border">
                   <div className="space-y-2">
-                    <label htmlFor="new-email" className="text-xs font-semibold">
+                    <label
+                      htmlFor="new-email"
+                      className="text-xs font-semibold"
+                    >
                       New Email Address
                     </label>
                     <input
@@ -585,7 +617,9 @@ export default function SettingsContent({
                   </p>
                   <Button
                     onClick={handleChangeEmail}
-                    disabled={changingEmail || !newEmail || !newEmail.includes("@")}
+                    disabled={
+                      changingEmail || !newEmail || !newEmail.includes("@")
+                    }
                     size="sm"
                     className="gap-2"
                   >

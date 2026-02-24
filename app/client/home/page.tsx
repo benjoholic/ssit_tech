@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
+import {
+  getProductsAction,
+  getCategoriesAction,
+} from "@/app/admin/products/actions";
 import ClientDashboard from "./dashboard-client";
 
 export default async function ClientHomePage() {

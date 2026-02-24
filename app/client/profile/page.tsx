@@ -22,12 +22,24 @@ export default async function ClientProfilePageRoute() {
   const fullName = (meta.full_name as string | undefined) || "";
   const avatarUrl = (meta.avatar_url as string | undefined) || "";
 
-  // Load extended profile from the profiles table (not from JWT/user_metadata)
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("company, phone, location, website, bio")
-    .eq("id", user.id)
-    .single();
+  // Load extended profile from the profiles table (silently ignore if table doesn't exist yet)
+  let profile: {
+    company?: string;
+    phone?: string;
+    location?: string;
+    website?: string;
+    bio?: string;
+  } | null = null;
+  try {
+    const { data } = await supabase
+      .from("profiles")
+      .select("company, phone, location, website, bio")
+      .eq("id", user.id)
+      .single();
+    profile = data;
+  } catch {
+    // profiles table may not exist yet — treat as empty
+  }
 
   return (
     <ClientProfilePage

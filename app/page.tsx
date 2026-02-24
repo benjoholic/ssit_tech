@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/hero-section";
 import { CtaSection } from "@/components/cta-section";
+import { ProductsShowcase } from "@/components/products-showcase";
 
 export default function Home() {
   return (
@@ -47,6 +48,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ProductsShowcase />
+
+      <ProductsShowcase />
 
       <CtaSection />
     </main>

@@ -24,12 +24,18 @@ export function ClientHeaderWrapper() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Load extended profile from the profiles table
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("company, phone, location")
-        .eq("id", user.id)
-        .single();
+      // Load extended profile from the profiles table (silently ignore if table doesn't exist)
+      let profile: { company?: string; phone?: string; location?: string } | null = null;
+      try {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("company, phone, location")
+          .eq("id", user.id)
+          .single();
+        profile = profileData;
+      } catch {
+        // profiles table may not exist yet — ignore
+      }
 
       setUserData({
         email: user.email,

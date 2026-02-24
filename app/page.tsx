@@ -51,8 +51,6 @@ export default function Home() {
 
       <ProductsShowcase />
 
-      <ProductsShowcase />
-
       <CtaSection />
     </main>
   );

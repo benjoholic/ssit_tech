@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
-  allowedDevOrigins: ["192.168.254.117", "10.112.210.94"],
+  allowedDevOrigins: ["192.168.254.117", "10.112.210.94", "192.168.0.121"],
   images: {
     remotePatterns: [
       {

@@ -32,15 +32,25 @@ export function ProductsShowcase() {
       getProductsAction(),
       getCategoriesAction(),
       createClient().auth.getUser(),
-    ]).then(([prodRes, catRes, { data }]) => {
-      setProducts(prodRes.data);
-      setCategories(catRes.data ?? []);
-      if (data.user) {
-        setIsLoggedIn(true);
-        setIsAdmin(!!data.user.user_metadata?.is_admin);
-      }
-      setLoading(false);
-    });
+    ])
+      .then(([prodRes, catRes, { data }]) => {
+        setProducts(prodRes.data);
+        setCategories(catRes.data ?? []);
+        if (data.user) {
+          setIsLoggedIn(true);
+          setIsAdmin(!!data.user.user_metadata?.is_admin);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        // If fetching fails (e.g. missing env keys or server error), stop the loading state
+        // and keep products empty so the UI shows the empty state instead of an infinite loader.
+        // eslint-disable-next-line no-console
+        console.error("ProductsShowcase fetch error:", err);
+        setProducts([]);
+        setCategories([]);
+        setLoading(false);
+      });
   }, []);
 
   function getCategoryLabel(slug: string) {

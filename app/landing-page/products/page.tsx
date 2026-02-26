@@ -226,19 +226,29 @@ export default function ProductsPage() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    Promise.all([getProductsAction(), getCategoriesAction()]).then(
-      ([prodRes, catRes]) => {
+    Promise.all([getProductsAction(), getCategoriesAction()])
+      .then(([prodRes, catRes]) => {
         if (mounted) {
           setLoading(false);
           if (!prodRes.error) setProducts(prodRes.data);
           if (!catRes.error) setDbCategories(catRes.data);
         }
-      },
-    );
+      })
+      .catch((err) => {
+        // Ensure we clear loading state on errors (e.g. missing env or server failure)
+        // eslint-disable-next-line no-console
+        console.error("Products page fetch error:", err);
+        if (mounted) {
+          setLoading(false);
+          setProducts([]);
+          setDbCategories([]);
+        }
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
 
   /* -------- Click-outside for search -------- */
   useEffect(() => {

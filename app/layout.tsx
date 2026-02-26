@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Poppins, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ConditionalHeader } from "@/components/conditional-header";
 import { ConditionalFooter } from "@/components/conditional-footer";
@@ -8,18 +7,9 @@ import { AdminSidebarProvider } from "@/components/admin/sidebar-context";
 import "./globals.css";
 import "./tw-animate.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
+// NOTE: Using `next/font/google` attempts to fetch fonts at build time.
+// On environments without network access this causes build failures.
+// For now we use local/system fallbacks defined in `globals.css`.
 
 export const metadata: Metadata = {
   title: "SSIT Portal",
@@ -36,9 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${poppins.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+      <body className={`antialiased`}>
         <ClientSidebarProvider>
           <AdminSidebarProvider>
             <ConditionalHeader />

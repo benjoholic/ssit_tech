@@ -116,6 +116,9 @@ body::-webkit-scrollbar-thumb {
 }
 
 :root {
+  /* Provide sensible font fallbacks so builds won't require fetching Google Fonts */
+  --font-poppins: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
   --radius: 0.625rem;
   --background: 0 0% 100%;
   --foreground: 240 10% 8%;
@@ -148,6 +151,12 @@ body::-webkit-scrollbar-thumb {
   --sidebar-accent-foreground: 240 5% 13%;
   --sidebar-border: 240 2% 93%;
   --sidebar-ring: 240 2% 45%;
+}
+
+/* Base font-family using the variables above. This prevents next/font/google
+   from being required during build and ensures a consistent fallback stack. */
+html, body {
+  font-family: var(--font-poppins);
 }
 
 .dark {

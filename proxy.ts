@@ -32,6 +32,7 @@ export async function proxy(request: NextRequest) {
           supabaseResponse.cookies.set(name, value, options),
         );
       },
+      encode: "tokens-only", // minimize cookie size to avoid 431 errors
     },
   });
 

@@ -71,9 +71,10 @@ export function AdminHeader() {
           <Image 
             src="/images/ssit.png" 
             alt="SSIT Tech Logo" 
-            width={48} 
-            height={48}
-            className="h-12 w-12 lg:h-10 lg:w-10 shrink-0 rounded-lg object-contain scale-150 lg:scale-100"
+            width={120} 
+            height={120}
+            className="h-auto w-auto rounded-lg drop-shadow-md"
+            loading="eager"
           />
         </Link>
       </div>

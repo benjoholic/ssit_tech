@@ -409,48 +409,37 @@ export default function SettingsContent({
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
+              <Button
                 onClick={handleToggleEmailNotifs}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   emailNotifs ? "bg-primary" : "bg-muted-foreground/30"
                 }`}
+                aria-label={emailNotifs ? "Disable email notifications" : "Enable email notifications"}
+                title={emailNotifs ? "Disable email notifications" : "Enable email notifications"}
+                aria-pressed={!!emailNotifs}
               >
                 <span
                   className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
                     emailNotifs ? "translate-x-6" : "translate-x-1"
                   }`}
                 />
-              </button>
-            </div>
+              </Button>
 
-            <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
-              <div className="flex items-center gap-3">
-                {orderNotifs ? (
-                  <Bell className="h-4 w-4 text-muted-foreground" />
-                ) : (
-                  <BellOff className="h-4 w-4 text-muted-foreground" />
-                )}
-                <div>
-                  <p className="text-sm font-medium">Order Updates</p>
-                  <p className="text-xs text-muted-foreground">
-                    Get notified about order inquiry status changes
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
+              <Button
                 onClick={handleToggleOrderNotifs}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   orderNotifs ? "bg-primary" : "bg-muted-foreground/30"
                 }`}
+                aria-label={orderNotifs ? "Disable order notifications" : "Enable order notifications"}
+                title={orderNotifs ? "Disable order notifications" : "Enable order notifications"}
+                aria-pressed={!!orderNotifs}
               >
                 <span
                   className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
                     orderNotifs ? "translate-x-6" : "translate-x-1"
                   }`}
                 />
-              </button>
+              </Button>
             </div>
           </CardContent>
         </Card>

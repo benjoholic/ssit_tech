@@ -20,10 +20,12 @@ function CollapsibleTrigger({
 }
 
 function CollapsibleContent({
+  id,
   ...props
-}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleContent>) {
+}: React.ComponentProps<typeof CollapsiblePrimitive.CollapsibleContent> & { id?: string }) {
   return (
     <CollapsiblePrimitive.CollapsibleContent
+      id={id}
       data-slot="collapsible-content"
       {...props}
     />

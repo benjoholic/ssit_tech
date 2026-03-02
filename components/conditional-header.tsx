@@ -1,32 +1,37 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { Header } from "@/components/header";
 import { ClientHeaderWrapper } from "@/components/client/header-wrapper";
 import { AdminHeader } from "@/components/admin/header";
+import { ReactElement } from "react";
 
-const NO_HEADER_PATHS = [
-  "/credentials/admin/login",
-  "/credentials/admin/forgot-password",
-  "/credentials/client/login",
-  "/credentials/client/signup",
-  "/credentials/client/forgot-password",
-  "/credentials/client/reset-password",
-  "/credentials/retailer/login",
-  "/credentials/retailer/signup",
-  "/credentials/retailer/forgot-password",
-  "/credentials/retailer/reset-password",
-  "/unauthenticated",
-];
+const NON_LANDING_PREFIXES = ["/admin", "/client", "/unauthenticated"];
 
 export function ConditionalHeader() {
   const pathname = usePathname();
-  const hideHeader = NO_HEADER_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(path + "/")
-  );
 
-  if (hideHeader) return null;
-  if (pathname.startsWith("/admin")) return <AdminHeader />;
-  if (pathname.startsWith("/client")) return <ClientHeaderWrapper />;
-  return <Header />;
+  useEffect(() => {
+    console.log("ConditionalHeader pathname:", pathname);
+  }, [pathname]);
+
+  // Default to rendering the Header
+  let ComponentToRender: ReactElement | null = <Header />;
+
+  if (pathname) {
+    const hideHeader = NON_LANDING_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(prefix + "/")
+    );
+
+    if (hideHeader) {
+      ComponentToRender = null;
+    } else if (pathname.startsWith("/admin")) {
+      ComponentToRender = <AdminHeader />;
+    } else if (pathname.startsWith("/client")) {
+      ComponentToRender = <ClientHeaderWrapper />;
+    }
+  }
+
+  return ComponentToRender;
 }

@@ -1,9 +1,17 @@
+
 "use client";
+import { HeroCarousel } from "@/components/hero-carousel";
 
 import Link from "next/link";
+import GradientOutlineButton from "@/components/ui/gradient-outline-button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { HeroCarousel } from "@/components/hero-carousel";
+import { useRef, useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+
+import Pattern from "./Pattern";
+import "./hero-section.css";
+
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,112 +23,73 @@ export function HeroSection() {
   const carouselScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
   const carouselOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.4]);
 
-  return (
-    <section ref={sectionRef} className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Animated background blobs */}
-      <motion.div
-        className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-20"
-        style={{
-          background: "radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%)",
-        }}
-        animate={{
-          y: [0, 50, 0],
-          x: [0, 30, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute top-1/3 right-0 w-96 h-96 rounded-full opacity-20"
-        style={{
-          background: "radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, transparent 70%)",
-        }}
-        animate={{
-          y: [0, -50, 0],
-          x: [0, -30, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute bottom-0 left-1/2 w-96 h-96 rounded-full opacity-10"
-        style={{
-          background: "radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%)",
-        }}
-        animate={{
-          y: [0, 40, 0],
-          x: [0, -40, 0],
-          scale: [1, 1.05, 1],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+  // track auth/dashboard link similar to header so hero buttons mirror behaviour
+  const [dashboardHref, setDashboardHref] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
-      {/* Content overlay */}
-      <motion.div
-        className="relative z-10 mx-auto max-w-4xl px-6 pb-12 pt-12 md:px-8 md:pt-14 md:pb-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Copy */}
-        <div className="mx-auto mb-8 flex max-w-xl flex-col items-center text-center md:mb-10">
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        const admin = !!data.user.user_metadata?.is_admin;
+        setDashboardHref(admin ? null : "/client/home");
+      } else {
+        setDashboardHref(null);
+      }
+      setAuthLoading(false);
+    });
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="relative overflow-hidden bg-black">
+      {/* Pattern Background */}
+      <Pattern />
+      // ...waves removed...
+
+
+      {/* Two-column layout: left (text/buttons), right (carousel) */}
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-12 md:px-10 md:py-20 flex flex-col lg:flex-row gap-12 lg:gap-20 min-h-[400px] lg:min-h-[500px] items-center justify-center lg:items-center lg:justify-between hero-mobile-center">
+        {/* Left: Heading and buttons */}
+        <div className="flex flex-col items-start justify-center text-left space-y-8 w-full max-w-2xl lg:w-[30%] lg:h-full lg:justify-center lg:-mt-10 hero-mobile-center">
           <motion.h1
-            className="text-3xl font-bold leading-[1.15] tracking-tight text-white md:text-4xl lg:text-4xl"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight tracking-tight text-white hero-title"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
           >
-            A modern portal for&nbsp;growing client networks
+            A modern portal for<br />growing client networks
           </motion.h1>
-          <motion.p
-            className="mt-4 max-w-lg text-base leading-relaxed text-slate-100 md:text-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Centralize applications, credentials, and approvals in one place —
-            smooth for clients, full visibility for your team.
-          </motion.p>
-          <motion.div
-            className="mt-6 flex items-center gap-3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
+          <div className="flex gap-4 mt-2 hero-buttons">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="/credentials/client/login"
-                className="inline-block rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-blue-700 hover:shadow-xl"
+                href={
+                  !authLoading && dashboardHref
+                    ? dashboardHref
+                    : "/credentials/client/login"
+                }
+                className="inline-block"
               >
-                Get started
+                <GradientOutlineButton>
+                  {(!authLoading && dashboardHref) ? "Dashboard" : "Get started"}
+                </GradientOutlineButton>
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="#features"
-                className="inline-block rounded-full border-2 border-slate-300 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white hover:bg-opacity-10 hover:border-white"
-              >
-                Learn more
-              </Link>
-            </motion.div>
-          </motion.div>
+            {/* hide learn-more when already showing dashboard */}
+            {(!authLoading && !dashboardHref) && (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link href="#features" className="inline-block">
+                  <GradientOutlineButton style={{ borderColor: '#94a3b8' }} hideArrow>
+                    Learn more
+                  </GradientOutlineButton>
+                </Link>
+              </motion.div>
+            )}
+          </div>
         </div>
 
-        {/* Gallery Slider */}
+        {/* Right: HeroCarousel */}
         <motion.div
-          className="flex items-center justify-center"
+          className="relative w-full max-w-2xl flex justify-center items-center lg:w-[70%] lg:h-full lg:justify-center"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -128,7 +97,7 @@ export function HeroSection() {
         >
           <HeroCarousel />
         </motion.div>
-      </motion.div>
+      </div>
 
       {/* Subtle divider */}
       <div className="h-px bg-slate-700" />

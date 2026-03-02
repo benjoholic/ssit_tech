@@ -121,7 +121,6 @@ export function Footer() {
             </h3>
             <ul className="space-y-2.5">
               {[
-                { label: "Client Login", href: "/credentials/client/login" },
                 { label: "Sign Up", href: "/credentials/client/signup" },
 
                 {

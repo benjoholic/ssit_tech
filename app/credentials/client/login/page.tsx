@@ -46,6 +46,19 @@ export default function ClientLoginPage() {
       return;
     }
 
+    // DEV-fallback: write a non-httpOnly cookie that middleware will exchange
+    // into the proper server-side Supabase cookie so SSR can read the session
+    if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+      try {
+        const devToken = data?.session?.access_token ?? null
+        if (devToken) {
+          document.cookie = `dev_supabase_token=${devToken}; path=/; SameSite=Lax; Secure`
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
     setLoading(false);
     router.push("/client/home");
     router.refresh();

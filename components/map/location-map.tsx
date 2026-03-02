@@ -1,6 +1,7 @@
 "use client";
 
-import Map from "react-map-gl/mapbox";
+import { useRef, useState } from "react";
+import Map, { type MapRef } from "react-map-gl/mapbox";
 import { Marker } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -23,6 +24,8 @@ export function LocationMap({
   accessToken,
   className = "",
 }: LocationMapProps) {
+  const [mapReady, setMapReady] = useState(false);
+  const mapRef = useRef<MapRef>(null);
   const token =
     accessToken ??
     process.env.NEXT_PUBLIC_MAPBOX_TOKEN ??
@@ -31,8 +34,7 @@ export function LocationMap({
   if (!token) {
     return (
       <div
-        className={`flex items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-600 ${className}`}
-        style={{ minHeight: 320 }}
+        className={`flex min-h-[320px] items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-600 ${className}`}
       >
         <p className="text-center text-sm">
           Add <code className="rounded bg-zinc-200 px-1.5 py-0.5">NEXT_PUBLIC_MAPBOX_TOKEN</code> or{" "}
@@ -44,8 +46,9 @@ export function LocationMap({
   }
 
   return (
-    <div className={`overflow-hidden rounded-xl border border-zinc-200 ${className}`} style={{ minHeight: 320 }}>
+    <div className={`min-h-[320px] overflow-hidden rounded-xl border border-zinc-200 ${className}`}>
       <Map
+        ref={mapRef}
         mapboxAccessToken={token}
         initialViewState={{
           longitude,
@@ -55,13 +58,20 @@ export function LocationMap({
         mapStyle="mapbox://styles/mapbox/light-v11"
         style={{ width: "100%", height: 320 }}
         attributionControl={true}
+        onIdle={() => {
+          if (mapRef.current?.getMap().loaded()) {
+            setMapReady(true);
+          }
+        }}
       >
-        <Marker longitude={longitude} latitude={latitude} anchor="bottom">
-          <div
-            className="h-8 w-8 rounded-full border-2 border-white bg-zinc-800 shadow-md"
-            aria-hidden
-          />
-        </Marker>
+        {mapReady && (
+          <Marker longitude={longitude} latitude={latitude} anchor="bottom">
+            <div
+              className="h-8 w-8 rounded-full border-2 border-white bg-zinc-800 shadow-md"
+              aria-hidden
+            />
+          </Marker>
+        )}
       </Map>
     </div>
   );

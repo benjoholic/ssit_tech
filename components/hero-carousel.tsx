@@ -11,7 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { getProductsAction } from "@/app/admin/products/actions";
+import { fetchProductsCached as getProductsAction } from "@/lib/productsClient";
 import { CATEGORY_LABELS, type Product } from "@/lib/products";
 
 export function HeroCarousel() {
@@ -44,20 +44,20 @@ export function HeroCarousel() {
 
   if (loading) {
     return (
-      <div className="relative w-full max-w-xs sm:max-w-xl md:max-w-4xl px-8 sm:px-10">
-        {/* Shimmer skeleton cards */}
+      <div className="relative w-full max-w-sm sm:max-w-2xl md:max-w-6xl px-2 sm:px-6">
+        {/* Shimmer skeleton cards sized to match final image container */}
         <div className="flex items-end justify-center gap-3">
           {/* Side card left */}
-          <div className="hidden sm:block w-1/3 rounded-2xl overflow-hidden shrink-0 scale-[0.82] opacity-[0.45]">
-            <div className="w-full h-[220px] bg-white/10 rounded-2xl shimmer-card" />
+          <div className="hidden sm:block w-1/3 rounded-3xl overflow-hidden shrink-0 scale-[0.82] opacity-[0.45] shadow-2xl bg-transparent">
+            <div className="w-full h-full min-h-[260px] sm:min-h-[320px] md:min-h-[380px] bg-white/10 shimmer-card" />
           </div>
           {/* Center card */}
-          <div className="w-full sm:w-1/3 rounded-2xl overflow-hidden shrink-0">
-            <div className="w-full h-[260px] bg-white/20 rounded-2xl shimmer-card" />
+          <div className="w-full sm:w-1/3 rounded-3xl overflow-hidden shrink-0 shadow-2xl bg-transparent">
+            <div className="w-full h-full min-h-[260px] sm:min-h-[320px] md:min-h-[380px] bg-white/20 shimmer-card" />
           </div>
           {/* Side card right */}
-          <div className="hidden sm:block w-1/3 rounded-2xl overflow-hidden shrink-0 scale-[0.82] opacity-[0.45]">
-            <div className="w-full h-[220px] bg-white/10 rounded-2xl shimmer-card" />
+          <div className="hidden sm:block w-1/3 rounded-3xl overflow-hidden shrink-0 scale-[0.82] opacity-[0.45] shadow-2xl bg-transparent">
+            <div className="w-full h-full min-h-[260px] sm:min-h-[320px] md:min-h-[380px] bg-white/10 shimmer-card" />
           </div>
         </div>
         <style>{`
@@ -91,7 +91,7 @@ export function HeroCarousel() {
   return (
     <AnimatePresence>
       <motion.div
-        className="relative w-full max-w-xs sm:max-w-xl md:max-w-4xl select-none px-8 sm:px-10"
+        className="relative w-full max-w-sm sm:max-w-2xl md:max-w-6xl select-none"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -108,7 +108,7 @@ export function HeroCarousel() {
             return (
               <CarouselItem
                 key={product.id}
-                className="pl-3 basis-full sm:basis-3/5 md:basis-2/5 lg:basis-1/3"
+                className="pl-3 basis-full sm:basis-4/5 md:basis-3/5 lg:basis-1/2"
               >
                 <div
                   className={`transition-all duration-500 ${
@@ -118,7 +118,7 @@ export function HeroCarousel() {
                   }`}
                 >
                   {/* Album cover */}
-                  <div className="relative w-full overflow-hidden rounded-2xl shadow-2xl bg-slate-800">
+                  <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl bg-transparent min-h-[260px] sm:min-h-[320px] md:min-h-[380px]">
                     {imageUrl(product) ? (
                       <Image
                         src={imageUrl(product)!}
@@ -129,19 +129,12 @@ export function HeroCarousel() {
                         sizes="(max-width: 640px) 90vw, (max-width: 768px) 60vw, 33vw"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-slate-700">
-                        <Package className="h-16 w-16 text-white/20" />
+                      <div className="flex h-full w-full items-center justify-center bg-transparent min-h-[260px] sm:min-h-[320px] md:min-h-[380px]">
+                        <Package className="h-24 w-24 text-white/20" />
                       </div>
                     )}
                     {/* Bottom gradient label */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 pt-8 sm:p-4 sm:pt-10">
-                      <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-white/60">
-                        {CATEGORY_LABELS[product.category]}
-                      </p>
-                      <h3 className="mt-0.5 text-xs sm:text-sm font-bold text-white leading-snug">
-                        {product.name}
-                      </h3>
-                    </div>
+                    {/* Removed name and category from bottom gradient label */}
                   </div>
                 </div>
               </CarouselItem>

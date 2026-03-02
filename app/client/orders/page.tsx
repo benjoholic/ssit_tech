@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getProductsAction } from "@/app/admin/products/actions";
+import { fetchProductsCached } from "@/lib/productsClient";
 import {
   submitOrderInquiry,
   getMyOrderInquiries,
@@ -77,7 +77,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function OrdersPage() {
   const searchParams = useSearchParams();
-  const preselectedProductId = searchParams.get("product") ?? "";
+  const preselectedProductId = searchParams?.get("product") ?? "";
 
   const [products, setProducts] = useState<Product[]>([]);
   const [inquiries, setInquiries] = useState<OrderInquiry[]>([]);
@@ -94,7 +94,7 @@ export default function OrdersPage() {
     let mounted = true;
     setLoading(true);
 
-    Promise.all([getProductsAction(), getMyOrderInquiries()]).then(
+    Promise.all([fetchProductsCached(), getMyOrderInquiries()]).then(
       ([prodRes, inqRes]) => {
         if (mounted) {
           if (!prodRes.error) setProducts(prodRes.data);

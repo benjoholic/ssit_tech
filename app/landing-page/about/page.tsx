@@ -23,9 +23,9 @@ import { motion } from "framer-motion";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white pb-20 font-sans text-foreground lg:pb-0">
+    <div className="min-h-screen bg-gray-200 pb-20 font-sans text-foreground lg:pb-0">
       {/* ====== Breadcrumb ====== */}
-      <div className="border-b border-zinc-100 bg-zinc-50/60">
+      <div className="border-b border-gray-300/70 bg-gray-100/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center gap-1.5 px-6 py-3 text-xs text-zinc-400 md:px-10">
           <Link href="/" className="transition-colors hover:text-zinc-600">
             Home
@@ -36,19 +36,20 @@ export default function AboutPage() {
       </div>
 
       {/* ====== Page header card ====== */}
-      <section className="bg-white px-6 pt-8 pb-0 md:px-10 md:pt-10">
+      <section className="bg-transparent px-6 pt-8 pb-0 md:px-10 md:pt-10">
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-8 md:px-10 md:py-10"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800 px-6 py-10 shadow-xl ring-1 ring-slate-400/20 md:px-10 md:py-12"
           >
             <div className="relative z-10">
+              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-300/80">SSIT Technology</p>
               <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
                 About Us
               </h1>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-300">
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-200/80">
                 We are a trusted technology partner — providing reliable wired
                 and wireless solutions for businesses, resellers, and
                 large-scale deployments.
@@ -97,7 +98,7 @@ export default function AboutPage() {
       </section>
 
       {/* ====== Our Story ====== */}
-      <section className="px-6 py-14 md:px-10 md:py-20">
+      <section className="px-6 py-14 md:px-10 md:py-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <motion.div
@@ -140,12 +141,12 @@ export default function AboutPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-5 text-center"
+                  className="rounded-xl border border-gray-300/60 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md"
                 >
-                  <p className="text-2xl font-bold text-zinc-900 md:text-3xl">
+                  <p className="text-2xl font-bold text-slate-700 md:text-3xl">
                     {stat.value}
                   </p>
-                  <p className="mt-1 text-xs font-medium text-zinc-400">
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
                     {stat.label}
                   </p>
                 </div>
@@ -156,7 +157,7 @@ export default function AboutPage() {
       </section>
 
       {/* ====== What We Stand For ====== */}
-      <section className="border-t border-zinc-100 bg-zinc-50/50 px-6 py-14 md:px-10 md:py-20">
+      <section className="border-t border-gray-300/60 bg-white/50 px-6 py-14 backdrop-blur-sm md:px-10 md:py-16">
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -213,15 +214,15 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ delay: i * 0.08, duration: 0.4 }}
-                className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="rounded-xl border border-gray-200/80 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100">
-                  <item.icon className="h-5 w-5 text-zinc-600" />
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                  <item.icon className="h-5 w-5 text-slate-600" />
                 </div>
-                <h3 className="mb-2 text-sm font-bold text-zinc-800">
+                <h3 className="mb-1.5 text-sm font-bold text-zinc-800">
                   {item.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-zinc-500">
+                <p className="text-[13px] leading-relaxed text-zinc-500">
                   {item.desc}
                 </p>
               </motion.div>
@@ -231,7 +232,7 @@ export default function AboutPage() {
       </section>
 
       {/* ====== Trust badges ====== */}
-      <section className="border-t border-zinc-100 px-6 py-10 md:px-10">
+      <section className="border-t border-gray-300/60 bg-gray-100/60 px-6 py-10 md:px-10">
         <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
@@ -261,16 +262,16 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.4 }}
-              className="flex items-start gap-3"
+              className="flex items-start gap-4 rounded-xl border border-gray-200/70 bg-white p-4 shadow-sm"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100">
-                <item.icon className="h-5 w-5 text-zinc-600" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                <item.icon className="h-5 w-5 text-slate-600" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-zinc-800">
                   {item.title}
                 </p>
-                <p className="text-xs text-zinc-400">{item.desc}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-zinc-400">{item.desc}</p>
               </div>
             </motion.div>
           ))}

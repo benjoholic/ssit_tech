@@ -5,12 +5,11 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Search } from "lucide-react";
 import {
-  getProductsAction,
   addProductAction,
   updateProductAction,
   deleteProductAction,
-  getCategoriesAction,
 } from "@/app/admin/products/actions";
+import { fetchProductsCached, fetchCategoriesCached } from "@/lib/productsClient";
 import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
 import { NoResultsAnimation } from "@/components/admin/no-results-animation";
 import { BarcodeScanner } from "@/components/barcode-scanner";
@@ -116,7 +115,7 @@ export default function ManageProductsPage() {
   const ITEMS_PER_PAGE = 5;
 
   const fetchProducts = useCallback(async () => {
-    const { data, error } = await getProductsAction();
+    const { data, error } = await fetchProductsCached();
     if (error) {
       toast.error("Failed to load products", { description: error });
       return;
@@ -128,8 +127,8 @@ export default function ManageProductsPage() {
     let mounted = true;
     setLoading(true);
 
-    // Load products and categories in parallel
-    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+    // Load products and categories in parallel using client cache
+    Promise.all([fetchProductsCached(), fetchCategoriesCached()]).then(
       ([productsResult, categoriesResult]) => {
         if (!mounted) return;
         setLoading(false);

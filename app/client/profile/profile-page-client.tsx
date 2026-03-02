@@ -350,8 +350,11 @@ export default function ClientProfilePage({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
-                {/* Hidden file input for avatar upload */}
+                <label htmlFor="avatar-upload" className="sr-only">
+                  Upload Avatar
+                </label>
                 <input
+                  id="avatar-upload"
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"

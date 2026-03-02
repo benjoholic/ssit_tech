@@ -44,12 +44,14 @@ const adminNavSections = [
   },
 ] as const;
 
-function isActivePath(pathname: string, href: string) {
+function isActivePath(pathname: string | null, href: string) {
+  if (!pathname) return false;
   if (href === "/admin/home") return pathname === "/admin/home";
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-function parseCategoriesFromUrl(searchParams: ReturnType<typeof useSearchParams>): string[] {
+function parseCategoriesFromUrl(searchParams: ReturnType<typeof useSearchParams> | null): string[] {
+  if (!searchParams) return [];
   const raw = searchParams.get("categories");
   if (!raw?.trim()) return [];
   return raw.split(",").map((s) => s.trim()).filter(Boolean);
@@ -71,7 +73,7 @@ function AdminSidebarNav({ categories }: { categories: CategoryEntry[] }) {
   const isProductsPath = pathname === PRODUCTS_PATH;
   const [isProductsOpen, setIsProductsOpen] = useState(isProductsPath);
   const selectedCategories = parseCategoriesFromUrl(searchParams);
-  const isClientsPath = pathname === "/admin/clients" || pathname.startsWith("/admin/clients/");
+  const isClientsPath = pathname === "/admin/clients" || (pathname?.startsWith("/admin/clients/") ?? false);
 
   const handleSignOut = async () => {
     setSigningOut(true);

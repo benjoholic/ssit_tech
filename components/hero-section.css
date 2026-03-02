@@ -1,0 +1,16 @@
+/* Hero section mobile overrides */
+@media (max-width: 639px) {
+  .hero-mobile-center {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .hero-mobile-center h1,
+  .hero-mobile-center .hero-title {
+    text-align: center !important;
+    width: 100%;
+  }
+  .hero-mobile-center .hero-buttons {
+    justify-content: center !important;
+    width: 100%;
+  }
+}

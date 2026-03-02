@@ -44,7 +44,8 @@ const settingsSubLinks = [
   { href: "/client/settings/status", label: "Account Status", icon: Activity },
 ] as const;
 
-function isActivePath(pathname: string, href: string) {
+function isActivePath(pathname: string | null, href: string) {
+  if (!pathname) return false;
   if (href === "/client/home") return pathname === "/client/home";
   return pathname === href || pathname.startsWith(href + "/");
 }
@@ -57,7 +58,7 @@ function SidebarNav() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   
   // Auto-expand settings if current path is within settings
-  const isSettingsPath = pathname.startsWith("/client/settings");
+  const isSettingsPath = pathname?.startsWith("/client/settings") ?? false;
   const [isSettingsOpen, setIsSettingsOpen] = useState(isSettingsPath);
 
   useEffect(() => {

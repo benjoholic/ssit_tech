@@ -17,6 +17,7 @@ export default function FloatingMarketplace() {
             src="/images/lazada.jpg"
             alt="Lazada"
             fill
+            sizes="48px"
             className="object-cover transition-transform duration-200 ease-in-out group-hover:scale-110"
           />
         </div>

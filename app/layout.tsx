@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
-import { ConditionalHeader } from "@/components/conditional-header";
+import { ClientConditionalHeader } from "@/components/client-conditional-header";
 import { ConditionalFooter } from "@/components/conditional-footer";
 import { ClientSidebarProvider } from "@/components/client/sidebar-context";
 import { AdminSidebarProvider } from "@/components/admin/sidebar-context";
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`antialiased`}>
         <ClientSidebarProvider>
           <AdminSidebarProvider>
-            <ConditionalHeader />
+            <ClientConditionalHeader />
             {children}
             <ConditionalFooter />
           </AdminSidebarProvider>

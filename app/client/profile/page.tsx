@@ -14,11 +14,9 @@ export default async function ClientProfilePageRoute() {
     user = null;
   }
 
-  if (!user) {
-    redirect("/unauthenticated");
-  }
+  // Allow unauthenticated access: previously redirected to /unauthenticated
 
-  const meta = user.user_metadata || {};
+  const meta = user?.user_metadata || {};
   const fullName = (meta.full_name as string | undefined) || "";
   const avatarUrl = (meta.avatar_url as string | undefined) || "";
 
@@ -34,7 +32,7 @@ export default async function ClientProfilePageRoute() {
     const { data } = await supabase
       .from("profiles")
       .select("company, phone, location, website, bio")
-      .eq("id", user.id)
+      .eq("id", user?.id)
       .single();
     profile = data;
   } catch {
@@ -43,11 +41,11 @@ export default async function ClientProfilePageRoute() {
 
   return (
     <ClientProfilePage
-      userId={user.id}
-      email={user.email || ""}
-      emailVerified={user.email_confirmed_at !== null}
-      createdAt={user.created_at || ""}
-      provider={(user.app_metadata?.provider as string | undefined) || "email"}
+      userId={user?.id || ""}
+      email={user?.email || ""}
+      emailVerified={user?.email_confirmed_at !== null}
+      createdAt={user?.created_at || ""}
+      provider={(user?.app_metadata?.provider as string | undefined) || "email"}
       initialProfile={{
         fullName,
         avatarUrl,

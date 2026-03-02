@@ -10,12 +10,12 @@ export function ConditionalFooter() {
   const pathname = usePathname();
 
   const isNonLanding = NON_LANDING_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || (pathname?.startsWith(p + "/") ?? false)
   );
   if (isNonLanding) return null;
 
   const isLanding = LANDING_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(p + "/")
+    (p) => pathname === p || (pathname?.startsWith(p + "/") ?? false)
   );
   if (!isLanding) return null;
 

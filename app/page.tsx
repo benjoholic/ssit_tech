@@ -1,14 +1,15 @@
 import { HeroSection } from "@/components/hero-section";
 import { CtaSection } from "@/components/cta-section";
-import { ProductsShowcase } from "@/components/products-showcase";
+import Card from "@/components/ui/feature-card";
+
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100 pb-20 font-sans text-zinc-900 lg:pb-0">
+    <main className="relative min-h-screen bg-gray-100 pb-20 font-sans text-zinc-900 lg:pb-0">
       <HeroSection />
 
       {/* Features */}
-      <section id="features" className="px-6 py-16 md:px-10 md:py-24">
+      <section id="features" className="px-6 py-16 md:px-10 md:py-24 bg-white">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center text-3xl font-bold tracking-tight text-zinc-900 md:text-5xl">
             Why choose SSIT Tech
@@ -33,24 +34,11 @@ export default function Home() {
                 desc: "From small deployments to enterprise installations, we scale our offerings to match your project requirements.",
               },
             ].map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm transition hover:border-zinc-300 hover:shadow-md"
-              >
-                <h3 className="text-lg font-bold text-zinc-900">
-                  {f.title}
-                </h3>
-                <p className="mt-3 text-base leading-relaxed text-zinc-500">
-                  {f.desc}
-                </p>
-              </div>
+              <Card key={f.title} title={f.title} desc={f.desc} />
             ))}
           </div>
         </div>
       </section>
-
-      <ProductsShowcase />
-
       <CtaSection />
     </main>
   );

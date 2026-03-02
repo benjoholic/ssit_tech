@@ -10,10 +10,7 @@ import {
   ShoppingCart,
   Package,
 } from "lucide-react";
-import {
-  getProductsAction,
-  getCategoriesAction,
-} from "@/app/admin/products/actions";
+import { fetchProductsCached, fetchCategoriesCached } from "@/lib/productsClient";
 import {
   CATEGORY_LABELS,
   type Product,
@@ -49,7 +46,7 @@ export default function ProductsPage() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+    Promise.all([fetchProductsCached(), fetchCategoriesCached()]).then(
       ([prodRes, catRes]) => {
         if (mounted) {
           setLoading(false);
@@ -64,7 +61,7 @@ export default function ProductsPage() {
   }, []);
 
   const categoryLabels = useMemo(() => {
-    const labels: Record<string, string> = { ...CATEGORY_LABELS };
+    const labels: Record<string, string> = {};
     for (const entry of dbCategories) {
       labels[entry.name] = entry.label;
     }
@@ -318,26 +315,28 @@ export default function ProductsPage() {
                       <li
                         key={product.id}
                         className="rounded-lg border border-border bg-card overflow-hidden shadow-sm transition-all hover:shadow-md hover:border-primary/30 cursor-pointer group"
-                        onClick={() => setSelectedProduct(product)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setSelectedProduct(product);
-                          }
-                        }}
                       >
-                        {imageUrl(product) && (
-                          <div className="relative aspect-[4/3] w-full bg-muted overflow-hidden">
-                            <img
-                              src={imageUrl(product)!}
-                              alt=""
-                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                          </div>
-                        )}
-                        <div className="p-2 sm:p-4 lg:p-2">
+                        <button
+                          type="button"
+                          className="w-full rounded-lg border border-border bg-card overflow-hidden shadow-sm transition-all hover:shadow-md hover:border-primary/30 cursor-pointer group text-left"
+                          onClick={() => setSelectedProduct(product)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setSelectedProduct(product);
+                            }
+                          }}
+                        >
+                          {imageUrl(product) && (
+                            <div className="relative aspect-[4/3] w-full bg-muted overflow-hidden">
+                              <img
+                                src={imageUrl(product)!}
+                                alt=""
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                          )}
+                          <div className="p-2 sm:p-4 lg:p-2">
                           <p className="font-medium text-sm sm:text-base lg:text-sm text-foreground">
                             {product.name}
                           </p>
@@ -357,7 +356,8 @@ export default function ProductsPage() {
                                 : 0}
                             </span>
                           </div>
-                        </div>
+                          </div>
+                        </button>
                       </li>
                     ))}
                     {/* Skeleton placeholders to balance the last row */}

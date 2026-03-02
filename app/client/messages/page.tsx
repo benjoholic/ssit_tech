@@ -7,9 +7,10 @@ export default async function ClientMessagesPage() {
 
   try {
     const { data } = await supabase.auth.getUser();
-    if (!data?.user) redirect("/unauthenticated");
+    // Allow unauthenticated access: previously redirected to /unauthenticated
+    // if (!data?.user) redirect("/unauthenticated");
   } catch {
-    redirect("/unauthenticated");
+    // previously: redirect("/unauthenticated");
   }
 
   return (

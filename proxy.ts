@@ -17,27 +17,12 @@ export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
-  if (!supabaseUrl || !supabaseKey) {
-    return supabaseResponse;
+  // Ensure `supabaseUrl` is defined before using it
+  if (!supabaseUrl) {
+    console.error('Supabase URL is undefined. Check environment variables.');
+    const unauthenticatedUrl = new URL('/unauthenticated', request.url);
+    return NextResponse.redirect(unauthenticatedUrl);
   }
-
-  const supabase = createServerClient(supabaseUrl, supabaseKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        supabaseResponse = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options),
-        );
-      },
-      encode: "tokens-only", // minimize cookie size to avoid 431 errors
-    },
-  });
-
-  // This will refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
 
   return supabaseResponse;
 }

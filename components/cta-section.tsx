@@ -2,8 +2,21 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 
 export function CtaSection() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setIsLoggedIn(true);
+      }
+    });
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-slate-900 py-16 px-6 md:px-8 md:py-18">
       {/* Animated gradient orbs */}
@@ -82,10 +95,10 @@ export function CtaSection() {
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}>
             <Link
-              href="/credentials/client/signup"
+              href={isLoggedIn ? "/client/home" : "/credentials/client/signup"}
               className="inline-block rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:from-indigo-600 hover:to-blue-600 hover:shadow-xl"
             >
-              Create a free account
+              {isLoggedIn ? "Dashboard" : "Create a free account"}
             </Link>
           </motion.div>
         </motion.div>

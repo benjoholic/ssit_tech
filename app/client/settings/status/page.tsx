@@ -180,16 +180,14 @@ export default async function ClientSettingsStatusPage() {
     user = null;
   }
 
-  if (!user) {
-    redirect("/unauthenticated");
-  }
-  const userMetadata = user.user_metadata || {};
+  // Allow unauthenticated access: previously redirected to /unauthenticated
+  const userMetadata = user?.user_metadata || {};
   const fullName =
-    userMetadata.full_name || user.email?.split("@")[0] || "User";
-  const email = user.email || "No email";
-  const emailVerified = user.email_confirmed_at !== null;
-  const createdAt = user.created_at ? new Date(user.created_at) : null;
-  const lastSignIn = user.last_sign_in_at
+    userMetadata.full_name || user?.email?.split("@")[0] || "User";
+  const email = user?.email || "No email";
+  const emailVerified = user?.email_confirmed_at !== null;
+  const createdAt = user?.created_at ? new Date(user.created_at) : null;
+  const lastSignIn = user?.last_sign_in_at
     ? new Date(user.last_sign_in_at)
     : null;
 
@@ -295,7 +293,7 @@ export default async function ClientSettingsStatusPage() {
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <span className="text-sm text-muted-foreground">User ID</span>
                 <span className="font-mono text-xs font-medium text-foreground">
-                  {user.id.slice(0, 8)}...
+                  {user?.id?.slice(0, 8) || "Unknown"}...
                 </span>
               </div>
               <div className="flex items-center justify-between border-b border-border pb-3">
@@ -372,7 +370,7 @@ export default async function ClientSettingsStatusPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Provider</span>
                 <span className="text-sm font-medium capitalize">
-                  {user.app_metadata?.provider || "Email"}
+                  {user?.app_metadata?.provider || "Email"}
                 </span>
               </div>
             </div>

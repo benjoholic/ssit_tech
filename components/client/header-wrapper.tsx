@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ClientHeader } from "@/components/client/header";
+import ClearClientSessions from "@/components/client/clear-client-sessions";
 
 export function ClientHeaderWrapper() {
   const [userData, setUserData] = useState<{
@@ -66,7 +67,9 @@ export function ClientHeaderWrapper() {
   }, []);
 
   return (
-    <ClientHeader
+    <>
+      <ClearClientSessions />
+      <ClientHeader
       userEmail={userData.email}
       userName={userData.name}
       userAvatar={userData.avatar}
@@ -75,5 +78,6 @@ export function ClientHeaderWrapper() {
       userLocation={userData.location}
       emailVerified={userData.emailVerified}
     />
+    </>
   );
 }

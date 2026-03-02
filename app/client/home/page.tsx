@@ -17,9 +17,7 @@ export default async function ClientHomePage() {
     user = null;
   }
 
-  if (!user) {
-    redirect("/unauthenticated");
-  }
+  // Allow unauthenticated access: previously redirected to /unauthenticated
 
   const [prodRes, catRes] = await Promise.all([
     getProductsAction(),
@@ -29,11 +27,11 @@ export default async function ClientHomePage() {
   const products = prodRes.data ?? [];
   const categories = catRes.data ?? [];
 
-  const email = user.email ?? "";
-  const fullName = user.user_metadata?.full_name ?? "";
-  const avatarUrl = user.user_metadata?.avatar_url ?? "";
-  const emailVerified = !!user.email_confirmed_at;
-  const createdAt = user.created_at ?? "";
+  const email = user?.email ?? "";
+  const fullName = user?.user_metadata?.full_name ?? "";
+  const avatarUrl = user?.user_metadata?.avatar_url ?? "";
+  const emailVerified = !!user?.email_confirmed_at;
+  const createdAt = user?.created_at ?? "";
 
   return (
     <ClientDashboard

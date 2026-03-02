@@ -28,10 +28,14 @@ export const INITIAL_PRODUCTS: Product[] = [
 ];
 
 /** Built-in labels. UI falls back to the raw slug for custom categories. */
-export const CATEGORY_LABELS: Record<string, string> = {
+
+export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   cctv: "CCTV",
   access_point: "Access point",
+  switch: "Switch",
 };
+
+
 
 /** Shape of a row from the product_categories table. */
 export type CategoryEntry = {

@@ -41,7 +41,6 @@ export function SessionMonitor() {
         // Silently ignore "Refresh Token Not Found" and other session errors
         // These are expected when no valid session exists (e.g., on initial load)
         if (error instanceof Error && !error.message.includes("refresh_token_not_found")) {
-          console.error("Error checking session:", error);
         }
       }
     };
@@ -74,7 +73,6 @@ export function SessionMonitor() {
       await supabase.auth.signOut();
       router.push("/credentials/admin/login?reason=session_expired");
     } catch (error) {
-      console.error("Error signing out:", error);
       // Force redirect even if logout fails
       router.push("/credentials/admin/login?reason=session_expired");
     }

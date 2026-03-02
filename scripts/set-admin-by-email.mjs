@@ -3,12 +3,14 @@ import { stdin as input, stdout as output } from "node:process";
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * ENV required:
- *   SUPABASE_URL               - your project URL (e.g. https://xyz.supabase.co)
- *   SUPABASE_SERVICE_ROLE_KEY  - service_role key (never expose in browser)
+ *   Enter this on the command line to set the required environment variables (replace with your own values):
+ *   
+ *   $env:SUPABASE_URL="https://ebagvhbaediaznoshvgp.supabase.co"
+ *   $env:SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViYWd2aGJhZWRpYXpub3NodmdwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDg2MDUxMywiZXhwIjoyMDg2NDM2NTEzfQ.zmuvcUewsbN44KdPktSJu6NxLKX1aakYrO9gzjowTnI"
  *
- * Usage:
- *   # Option 1: pass email as argument
+ *   Set a user as admin by their email address. You can either pass the email as an argument or run the script and type it when prompted.
+ *   
+ *    # Option 1: pass email as argument
  *   node scripts/set-admin-by-email.mjs user@example.com
  *
  *   # Option 2: run and type email when prompted

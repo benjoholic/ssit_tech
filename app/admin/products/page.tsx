@@ -4,15 +4,16 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState, useEffect, useTransition } from "react";
 import { LayoutGrid, List, Package, FilterX, Search } from "lucide-react";
-import { getProductsAction, getCategoriesAction } from "@/app/admin/products/actions";
+import { fetchProductsCached, fetchCategoriesCached } from "@/lib/productsClient";
 import { CATEGORY_LABELS, type Product, type ProductCategory, type CategoryEntry } from "@/lib/products";
 import { NoResultsAnimation } from "@/components/admin/no-results-animation";
 import { BarcodeDisplay } from "@/components/barcode-display";
 
 function parseCategories(
-  searchParams: ReturnType<typeof useSearchParams>,
+  searchParams: ReturnType<typeof useSearchParams> | null,
   knownCategories: Set<string>,
 ): ProductCategory[] {
+  if (!searchParams) return [];
   const raw = searchParams.get("categories");
   if (!raw?.trim()) return [];
   const list = raw.split(",").map((s) => s.trim()).filter(Boolean);
@@ -34,7 +35,7 @@ export default function AdminProductsPage() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    Promise.all([getProductsAction(), getCategoriesAction()]).then(
+    Promise.all([fetchProductsCached(), fetchCategoriesCached()]).then(
       ([prodRes, catRes]) => {
         if (mounted) {
           setLoading(false);
@@ -48,7 +49,7 @@ export default function AdminProductsPage() {
 
   // Build a merged label map: DB categories + hardcoded fallbacks + any category found on products
   const categoryLabels = useMemo(() => {
-    const labels: Record<string, string> = { ...CATEGORY_LABELS };
+    const labels: Record<string, string> = {};
     for (const entry of dbCategories) {
       labels[entry.name] = entry.label;
     }

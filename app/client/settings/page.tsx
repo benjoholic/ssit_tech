@@ -13,15 +13,13 @@ export default async function ClientSettingsPage() {
     user = null;
   }
 
-  if (!user) {
-    redirect("/unauthenticated");
-  }
+  // Allow unauthenticated access: previously redirected to /unauthenticated
 
-  const email = user.email ?? "";
-  const fullName = user.user_metadata?.full_name ?? "";
+  const email = user?.email ?? "";
+  const fullName = user?.user_metadata?.full_name ?? "";
   const provider =
-    user.app_metadata?.provider ?? user.app_metadata?.providers?.[0] ?? "email";
-  const createdAt = user.created_at ?? "";
+    user?.app_metadata?.provider ?? user?.app_metadata?.providers?.[0] ?? "email";
+  const createdAt = user?.created_at ?? "";
 
   return (
     <SettingsContent

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import {
   Mail,
   Phone,
@@ -7,6 +10,7 @@ import {
   Twitter,
   Instagram,
   Linkedin,
+  ChevronDown,
 } from "lucide-react";
 
 function PaperPlaneLogo({ className }: { className?: string }) {
@@ -29,15 +33,47 @@ function PaperPlaneLogo({ className }: { className?: string }) {
   );
 }
 
+function CollapsibleSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b border-zinc-100 sm:border-none">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between py-3 text-sm font-semibold uppercase tracking-wider text-zinc-900 sm:cursor-default sm:py-0"
+      >
+        <span>{title}</span>
+        <ChevronDown
+          className={`h-4 w-4 text-zinc-400 transition-transform duration-200 sm:hidden ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-200 sm:!max-h-none sm:!opacity-100 sm:overflow-visible ${
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0 sm:max-h-none sm:opacity-100"
+        }`}
+      >
+        <div className="pb-3 sm:pb-0 sm:pt-4">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="border-t border-zinc-200 bg-white pb-20 lg:pb-0">
       <div className="mx-auto max-w-6xl px-6 py-12 md:px-10">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-0 sm:gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="space-y-4 pb-6 sm:pb-0 border-b border-zinc-100 sm:border-none">
             <div className="flex items-center gap-2">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-900 text-white">
                 <PaperPlaneLogo className="h-5 w-5" />
@@ -91,10 +127,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-900">
-              Quick Links
-            </h3>
+          <CollapsibleSection title="Quick Links">
             <ul className="space-y-2.5">
               {[
                 { label: "Home", href: "/" },
@@ -112,17 +145,13 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </CollapsibleSection>
 
           {/* Account */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-900">
-              Account
-            </h3>
+          <CollapsibleSection title="Account">
             <ul className="space-y-2.5">
               {[
                 { label: "Sign Up", href: "/credentials/client/signup" },
-
                 {
                   label: "Forgot Password",
                   href: "/credentials/client/forgot-password",
@@ -138,13 +167,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </CollapsibleSection>
 
           {/* Contact */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-900">
-              Contact
-            </h3>
+          <CollapsibleSection title="Contact">
             <ul className="space-y-3">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />
@@ -171,7 +197,7 @@ export function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </CollapsibleSection>
         </div>
 
         {/* Bottom bar */}

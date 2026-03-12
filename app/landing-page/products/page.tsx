@@ -374,7 +374,7 @@ export default function ProductsPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-500 via-slate-600 to-slate-800 px-6 py-10 shadow-xl ring-1 ring-slate-400/20 md:px-10 md:py-12"
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-900 via-teal-950 to-gray-950 px-6 py-10 shadow-xl ring-1 ring-teal-400/10 md:px-10 md:py-12"
           >
             <div className="relative z-10">
               <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-300/80">SSIT Technology</p>

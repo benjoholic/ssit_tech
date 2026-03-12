@@ -1,3 +1,13 @@
+/* Wave overlay wrappers */
+.hero-wave-wrapper {
+  line-height: 0;
+}
+
+.hero-wave-svg {
+  height: 100px;
+  display: block;
+}
+
 /* Hero section mobile overrides */
 @media (max-width: 639px) {
   .hero-mobile-center {
@@ -8,6 +18,10 @@
   .hero-mobile-center .hero-title {
     text-align: center !important;
     width: 100%;
+  }
+  .hero-mobile-center .hero-subtitle {
+    text-align: center !important;
+    max-width: 100%;
   }
   .hero-mobile-center .hero-buttons {
     justify-content: center !important;

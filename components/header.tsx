@@ -29,6 +29,22 @@ export function Header() {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userAvatarUrl, setUserAvatarUrl] = useState<string | null>(null);
+  const [mobileNavVisible, setMobileNavVisible] = useState(true);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setMobileNavVisible(false);
+      } else {
+        setMobileNavVisible(true);
+      }
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -110,7 +126,7 @@ export function Header() {
     </header>
 
     {/* Mobile bottom navigation */}
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gray-200 border-t border-zinc-200/80 shadow-md px-2 py-2 flex justify-around items-center lg:hidden">
+    <nav className={`fixed bottom-0 left-0 right-0 z-50 bg-gray-200 border-t border-zinc-200/80 shadow-md px-2 py-2 flex justify-around items-center lg:hidden transition-transform duration-300 ${mobileNavVisible ? "translate-y-0" : "translate-y-full"}`}>
       {/* Home */}
       <Link href="/" className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg transition-all duration-200 ${isActivePath(pathname, "/") ? "text-zinc-900" : "text-gray-500 hover:text-zinc-900"}`}>
         <Home className="w-5 h-5" />
